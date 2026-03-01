@@ -3,8 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load env vars from root .env (for local dev)
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Load env vars
+dotenv.config();
 
 const connectDB = require('./config/db');
 

@@ -16,10 +16,9 @@ const ManageProducts = () => {
 
     const fetchProducts = async () => {
         const { data } = await axios.get('/api/products');
-        // Prepend backend URL if image is a relative path
         const updatedData = data.map(p => ({
             ...p,
-            displayImage: p.image && p.image.startsWith('/uploads') ? `${API_URL}${p.image}` : p.image
+            displayImage: p.image // Relative pathing or URL works directly in production
         }));
         setProducts(updatedData);
     };
@@ -43,7 +42,7 @@ const ManageProducts = () => {
             const config = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).token : ''}`
+                    Authorization: `Bearer ${localStorage.getItem('adminInfo') ? JSON.parse(localStorage.getItem('adminInfo')).token : ''}`
                 }
             };
 

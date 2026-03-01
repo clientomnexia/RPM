@@ -82,10 +82,10 @@ const Dashboard = () => {
             <div className="quick-actions-section">
                 <h2>Quick Actions</h2>
                 <div className="action-buttons">
-                    <button className="btn btn-add" onClick={() => window.location.href = '/products'}>
+                    <button className="btn btn-add" onClick={() => window.location.href = '/admin/products'}>
                         <PlusCircle size={18} /> Update Inventory
                     </button>
-                    <button className="btn btn-edit" onClick={() => window.location.href = '/orders'}>
+                    <button className="btn btn-edit" onClick={() => window.location.href = '/admin/orders'}>
                         <ExternalLink size={18} /> Review Orders
                     </button>
                 </div>
