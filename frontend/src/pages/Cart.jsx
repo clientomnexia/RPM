@@ -3,7 +3,6 @@ import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import { Trash2, Plus, Minus } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const Cart = () => {
     const { cartItems, removeFromCart, updateQty, clearCart, cartTotal } = useCart();
@@ -25,7 +24,7 @@ const Cart = () => {
                 })),
                 totalPrice: cartTotal
             };
-            await axios.post(`${API_URL}/api/orders`, orderData);
+            await axios.post('/api/orders', orderData);
             setOrderPlaced(true);
             clearCart();
         } catch (error) {

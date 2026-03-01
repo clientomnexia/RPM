@@ -3,25 +3,25 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load env vars FIRST, before anything else
+// Load env vars from root .env
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const connectDB = require('../config/db');
+const connectDB = require('./config/db');
 
 // Import Routes
-const productRoutes = require('../routes/productRoutes');
-const franchiseRoutes = require('../routes/franchiseRoutes');
-const orderRoutes = require('../routes/orderRoutes');
-const contactRoutes = require('../routes/contactRoutes');
-const userRoutes = require('../routes/userRoutes');
-const { protect, admin } = require('../middleware/authMiddleware');
+const productRoutes = require('./routes/productRoutes');
+const franchiseRoutes = require('./routes/franchiseRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const userRoutes = require('./routes/userRoutes');
+const { protect, admin } = require('./middleware/authMiddleware');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Connect to Database on each request (uses cached connection)
+// Connect to Database on each request (uses cached connection in db.js)
 app.use(async (req, res, next) => {
     try {
         await connectDB();
@@ -31,8 +31,8 @@ app.use(async (req, res, next) => {
     }
 });
 
-// Public Routes (GET only for some)
-app.use('/api/products', productRoutes); // Controller should handle public GET vs admin POST/PUT/DELETE
+// Public Routes
+app.use('/api/products', productRoutes);
 app.use('/api/franchise', franchiseRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', userRoutes);
@@ -45,10 +45,9 @@ app.get('/api', (req, res) => {
     res.send('Raj Pan Mahal API is running');
 });
 
-// Port
+// For local development only
 const PORT = process.env.PORT || 3000;
-
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });

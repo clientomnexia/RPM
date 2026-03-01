@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Package, Briefcase, ShoppingBag, Mail, PlusCircle, ExternalLink } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({ products: 0, franchises: 0, orders: 0, messages: 0 });
@@ -16,10 +15,10 @@ const Dashboard = () => {
                     }
                 };
                 const [p, f, o, m] = await Promise.all([
-                    axios.get(`${API_URL}/api/products`),
-                    axios.get(`${API_URL}/api/franchise`),
-                    axios.get(`${API_URL}/api/orders`, config),
-                    axios.get(`${API_URL}/api/contact`, config)
+                    axios.get('/api/products'),
+                    axios.get('/api/franchise'),
+                    axios.get('/api/orders', config),
+                    axios.get('/api/contact', config)
                 ]);
                 setStats({
                     products: p.data.length,

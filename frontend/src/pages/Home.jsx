@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -13,7 +12,7 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get(`${API_URL}/api/products`);
+                const { data } = await axios.get('/api/products');
                 // Prepend backend URL if image is a relative path
                 const updatedData = data.map(p => ({
                     ...p,
@@ -62,10 +61,10 @@ const Home = () => {
 
             <section className="container">
                 <h2 style={{ textAlign: 'center', margin: '3rem 0', color: '#d4af37' }}>Featured Products</h2>
-                
-                <div className="carousel-container" 
-                     onMouseEnter={() => setIsHovered(true)} 
-                     onMouseLeave={() => setIsHovered(false)}>
+
+                <div className="carousel-container"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}>
                     <button className="carousel-btn prev" onClick={() => scroll('left')}>&#10094;</button>
                     <div className="carousel-track" ref={carouselRef}>
                         {products.map(product => (
@@ -85,7 +84,7 @@ const Home = () => {
                 <div className="container">
                     <h2 style={{ textAlign: 'center', color: '#d4af37' }}>Our Special Mix</h2>
                     <p style={{ textAlign: 'center', color: '#a0a0a0', marginBottom: '2rem' }}>Curated selections for every mood</p>
-                    
+
                     <div className="floating-grid">
                         <div className="floating-card">
                             <div className="floating-icon">🍃</div>

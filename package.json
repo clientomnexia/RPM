@@ -1,0 +1,26 @@
+{
+    "name": "rpm-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev:backend": "nodemon api/index.js",
+        "dev:frontend": "cd frontend && npm run dev",
+        "dev:admin": "cd admin && npm run dev",
+        "build:frontend": "cd frontend && npm run build",
+        "build:admin": "cd admin && npm run build",
+        "seed": "node api/seeder.js"
+    },
+    "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "cors": "^2.8.6",
+        "dotenv": "^16.6.1",
+        "express": "^4.22.1",
+        "jsonwebtoken": "^9.0.3",
+        "mongoose": "^8.23.0",
+        "mongoose-unique-validator": "^5.0.2",
+        "multer": "^2.1.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.14"
+    }
+}

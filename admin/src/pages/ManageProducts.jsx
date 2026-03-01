@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const ManageProducts = () => {
     const [products, setProducts] = useState([]);
@@ -16,7 +15,7 @@ const ManageProducts = () => {
     }, []);
 
     const fetchProducts = async () => {
-        const { data } = await axios.get(`${API_URL}/api/products`);
+        const { data } = await axios.get('/api/products');
         // Prepend backend URL if image is a relative path
         const updatedData = data.map(p => ({
             ...p,
@@ -49,9 +48,9 @@ const ManageProducts = () => {
             };
 
             if (editId) {
-                await axios.put(`${API_URL}/api/products/${editId}`, data, config);
+                await axios.put(`/api/products/${editId}`, data, config);
             } else {
-                await axios.post(`${API_URL}/api/products`, data, config);
+                await axios.post('/api/products', data, config);
             }
             setShowModal(false);
             setEditId(null);
@@ -85,7 +84,7 @@ const ManageProducts = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Delete this product?')) {
-            await axios.delete(`${API_URL}/api/products/${id}`);
+            await axios.delete(`/api/products/${id}`);
             fetchProducts();
         }
     };
