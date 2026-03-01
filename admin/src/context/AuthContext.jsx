@@ -1,13 +1,15 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [admin, setAdmin] = useState(JSON.parse(localStorage.getItem('adminInfo')) || null);
 
     const login = async (email, password) => {
-        const { data } = await axios.post('http://localhost:3000/api/users/login', { email, password });
+        const { data } = await axios.post(`${API_URL}/api/users/login`, { email, password });
         localStorage.setItem('adminInfo', JSON.stringify(data));
         setAdmin(data);
     };

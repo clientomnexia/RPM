@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const ManageMessages = () => {
     const [messages, setMessages] = useState([]);
 
@@ -9,13 +11,13 @@ const ManageMessages = () => {
     }, []);
 
     const fetchMessages = async () => {
-        const { data } = await axios.get('http://localhost:3000/api/contact');
+        const { data } = await axios.get(`${API_URL}/api/contact`);
         setMessages(data);
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('Delete this message?')) {
-            await axios.delete(`http://localhost:3000/api/contact/${id}`);
+            await axios.delete(`${API_URL}/api/contact/${id}`);
             fetchMessages();
         }
     };

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Products = () => {
     const [products, setProducts] = useState([]);
     const [category, setCategory] = useState('All');
@@ -12,7 +14,7 @@ const Products = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('http://localhost:3000/api/products');
+                const { data } = await axios.get(`${API_URL}/api/products`);
                 setProducts(data);
             } catch (error) {
                 console.error("Error fetching products", error);
@@ -21,18 +23,18 @@ const Products = () => {
         fetchProducts();
     }, []);
 
-    const filteredProducts = category === 'All' 
-        ? products 
+    const filteredProducts = category === 'All'
+        ? products
         : products.filter(p => p.category === category);
 
     return (
         <section className="container">
             <h2 style={{ textAlign: 'center', margin: '3rem 0', color: '#d4af37' }}>Our Products</h2>
-            
+
             <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem' }}>
                 {categories.map(cat => (
-                    <button 
-                        key={cat} 
+                    <button
+                        key={cat}
                         className={`btn ${category === cat ? 'btn-primary' : ''}`}
                         style={{ border: '1px solid var(--primary)', whiteSpace: 'nowrap' }}
                         onClick={() => setCategory(cat)}

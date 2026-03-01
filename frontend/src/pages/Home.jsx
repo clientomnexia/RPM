@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Home = () => {
     const [products, setProducts] = useState([]);
     const { addToCart } = useCart();
@@ -11,11 +13,11 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('http://localhost:3000/api/products');
+                const { data } = await axios.get(`${API_URL}/api/products`);
                 // Prepend backend URL if image is a relative path
                 const updatedData = data.map(p => ({
                     ...p,
-                    displayImage: p.image && p.image.startsWith('/uploads') ? `http://localhost:3000${p.image}` : p.image
+                    displayImage: p.image && p.image.startsWith('/uploads') ? `${API_URL}${p.image}` : p.image
                 }));
                 setProducts(updatedData); // Show more products for carousel
             } catch (error) {

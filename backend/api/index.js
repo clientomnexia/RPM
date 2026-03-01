@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+
+// Load env vars FIRST, before anything else
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 const connectDB = require('../config/db');
 
 // Import Routes
@@ -12,18 +16,20 @@ const contactRoutes = require('../routes/contactRoutes');
 const userRoutes = require('../routes/userRoutes');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-dotenv.config();
-
-// Connect to Database
-connectDB();
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the uploads directory
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+// Connect to Database on each request (uses cached connection)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(500).json({ message: 'Database connection failed' });
+    }
+});
 
 // Public Routes (GET only for some)
 app.use('/api/products', productRoutes); // Controller should handle public GET vs admin POST/PUT/DELETE

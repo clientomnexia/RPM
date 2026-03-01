@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const ManageProducts = () => {
     const [products, setProducts] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -14,11 +16,11 @@ const ManageProducts = () => {
     }, []);
 
     const fetchProducts = async () => {
-        const { data } = await axios.get('http://localhost:3000/api/products');
+        const { data } = await axios.get(`${API_URL}/api/products`);
         // Prepend backend URL if image is a relative path
         const updatedData = data.map(p => ({
             ...p,
-            displayImage: p.image && p.image.startsWith('/uploads') ? `http://localhost:3000${p.image}` : p.image
+            displayImage: p.image && p.image.startsWith('/uploads') ? `${API_URL}${p.image}` : p.image
         }));
         setProducts(updatedData);
     };
@@ -32,7 +34,7 @@ const ManageProducts = () => {
             data.append('category', formData.category);
             data.append('description', formData.description);
             data.append('stock', formData.stock);
-            
+
             if (imageFile) {
                 data.append('image', imageFile);
             } else {
@@ -47,9 +49,9 @@ const ManageProducts = () => {
             };
 
             if (editId) {
-                await axios.put(`http://localhost:3000/api/products/${editId}`, data, config);
+                await axios.put(`${API_URL}/api/products/${editId}`, data, config);
             } else {
-                await axios.post('http://localhost:3000/api/products', data, config);
+                await axios.post(`${API_URL}/api/products`, data, config);
             }
             setShowModal(false);
             setEditId(null);
@@ -83,7 +85,7 @@ const ManageProducts = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Delete this product?')) {
-            await axios.delete(`http://localhost:3000/api/products/${id}`);
+            await axios.delete(`${API_URL}/api/products/${id}`);
             fetchProducts();
         }
     };

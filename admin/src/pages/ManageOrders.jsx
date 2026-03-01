@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const ManageOrders = () => {
     const [orders, setOrders] = useState([]);
 
@@ -9,7 +11,7 @@ const ManageOrders = () => {
     }, []);
 
     const fetchOrders = async () => {
-        const { data } = await axios.get('http://localhost:3000/api/orders');
+        const { data } = await axios.get(`${API_URL}/api/orders`);
         setOrders(data);
     };
 
@@ -37,7 +39,7 @@ const ManageOrders = () => {
                             </td>
                             <td>
                                 {o.orderItems.map(item => (
-                                    <div key={item.product+item.name} style={{ fontSize: '0.9rem' }}>
+                                    <div key={item.product + item.name} style={{ fontSize: '0.9rem' }}>
                                         {item.qty}x {item.name} ({item.itemModel})
                                     </div>
                                 ))}

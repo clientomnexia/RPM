@@ -1,20 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
 const { getProducts, getProductById, createProduct, updateProduct, deleteProduct } = require('../controllers/productController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Multer Config
-const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename(req, file, cb) {
-        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
-
+// Use memory storage instead of disk storage for Vercel (read-only filesystem)
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.route('/')

@@ -3,6 +3,8 @@ import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import { Trash2, Plus, Minus } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Cart = () => {
     const { cartItems, removeFromCart, updateQty, clearCart, cartTotal } = useCart();
     const [orderPlaced, setOrderPlaced] = useState(false);
@@ -23,7 +25,7 @@ const Cart = () => {
                 })),
                 totalPrice: cartTotal
             };
-            await axios.post('http://localhost:3000/api/orders', orderData);
+            await axios.post(`${API_URL}/api/orders`, orderData);
             setOrderPlaced(true);
             clearCart();
         } catch (error) {
@@ -70,7 +72,7 @@ const Cart = () => {
                         </div>
                     ))}
                 </div>
-                
+
                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '15px', height: 'fit-content' }}>
                     <h3>Order Summary</h3>
                     <div style={{ margin: '1.5rem 0', borderTop: '1px solid #333', paddingTop: '1rem' }}>
@@ -83,7 +85,7 @@ const Cart = () => {
                             <span style={{ color: '#d4af37' }}>₹{cartTotal}</span>
                         </div>
                     </div>
-                    
+
                     <form onSubmit={handleCheckout}>
                         <input type="text" placeholder="Name" required style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', background: '#0a1f1a', border: '1px solid #333', color: 'white' }} onChange={e => setUserInfo({ ...userInfo, name: e.target.value })} />
                         <input type="email" placeholder="Email" required style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', background: '#0a1f1a', border: '1px solid #333', color: 'white' }} onChange={e => setUserInfo({ ...userInfo, email: e.target.value })} />

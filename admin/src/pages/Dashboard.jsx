@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Package, Briefcase, ShoppingBag, Mail, PlusCircle, ExternalLink } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Dashboard = () => {
     const [stats, setStats] = useState({ products: 0, franchises: 0, orders: 0, messages: 0 });
 
@@ -14,10 +16,10 @@ const Dashboard = () => {
                     }
                 };
                 const [p, f, o, m] = await Promise.all([
-                    axios.get('http://localhost:3000/api/products'),
-                    axios.get('http://localhost:3000/api/franchise'),
-                    axios.get('http://localhost:3000/api/orders', config),
-                    axios.get('http://localhost:3000/api/contact', config)
+                    axios.get(`${API_URL}/api/products`),
+                    axios.get(`${API_URL}/api/franchise`),
+                    axios.get(`${API_URL}/api/orders`, config),
+                    axios.get(`${API_URL}/api/contact`, config)
                 ]);
                 setStats({
                     products: p.data.length,
@@ -77,14 +79,14 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            
+
             <div className="quick-actions-section">
                 <h2>Quick Actions</h2>
                 <div className="action-buttons">
-                    <button className="btn btn-add" onClick={() => window.location.href='/products'}>
+                    <button className="btn btn-add" onClick={() => window.location.href = '/products'}>
                         <PlusCircle size={18} /> Update Inventory
                     </button>
-                    <button className="btn btn-edit" onClick={() => window.location.href='/orders'}>
+                    <button className="btn btn-edit" onClick={() => window.location.href = '/orders'}>
                         <ExternalLink size={18} /> Review Orders
                     </button>
                 </div>
