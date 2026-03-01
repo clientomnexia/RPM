@@ -12,6 +12,6 @@ const franchiseSchema = mongoose.Schema({
     timestamps: true,
 });
 
-const Franchise = mongoose.model('Franchise', franchiseSchema);
+const Franchise = mongoose.models.Franchise || mongoose.model('Franchise', franchiseSchema);
 
 module.exports = Franchise;

@@ -21,28 +21,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to Database on each request (uses cached connection in db.js)
+// Connect to Database on each request
 app.use(async (req, res, next) => {
     try {
         await connectDB();
         next();
     } catch (error) {
-        console.error('DATABASE ERROR:', error.message);
+        console.error('SERVERLESS DB ERROR:', error.message);
         res.status(500).json({
-            message: 'Database connection failed',
+            message: 'Database connection failed during request',
             error: error.message,
-            stack: process.env.NODE_ENV === 'production' ? null : error.stack
+            tip: 'Check your MONGODB_URI and Atlas Network Access (0.0.0.0/0)'
         });
     }
 });
 
-// Public Routes
+// Routes
 app.use('/api/products', productRoutes);
 app.use('/api/franchise', franchiseRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', userRoutes);
-
-// Protected Admin Routes
 app.use('/api/orders', protect, admin, orderRoutes);
 
 // Health Check
@@ -50,7 +48,17 @@ app.get('/api', (req, res) => {
     res.send('Raj Pan Mahal API is running');
 });
 
-// For local development only
+// Default Error Handler
+app.use((err, req, res, next) => {
+    console.error('GLOBAL ERROR:', err.message);
+    res.status(500).json({
+        message: 'Internal Server Error',
+        error: err.message,
+        stack: process.env.NODE_ENV === 'production' ? null : err.stack
+    });
+});
+
+// Local dev only
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'production' && require.main === module) {
     app.listen(PORT, () => {
