@@ -8,9 +8,9 @@
     ],
     "scripts": {
         "build": "npm run clean && npm run build:frontend && npm run build:admin",
-        "clean": "rm -rf public && mkdir -p public",
-        "build:frontend": "cd frontend && npm run build && cp -r dist/* ../public/",
-        "build:admin": "cd admin && npm run build && mkdir -p ../public/admin && cp -r dist/admin/* ../public/admin/",
+        "clean": "rm -rf dist && mkdir -p dist",
+        "build:frontend": "cd frontend && npm install && npm run build && cp -r dist/* ../dist/",
+        "build:admin": "cd admin && npm install && npm run build && mkdir -p ../dist/admin && cp -r dist/* ../dist/admin/",
         "dev:backend": "nodemon api/index.js",
         "dev:frontend": "npm run dev --workspace=frontend",
         "dev:admin": "npm run dev --workspace=admin",
