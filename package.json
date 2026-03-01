@@ -3,11 +3,12 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
+        "build": "npm run build:frontend && npm run build:admin",
+        "build:frontend": "cd frontend && npm install && npm run build && cp -r dist/* ../dist/",
+        "build:admin": "cd admin && npm install && npm run build && mkdir -p ../dist/admin && cp -r dist/admin/* ../dist/admin/",
         "dev:backend": "nodemon api/index.js",
         "dev:frontend": "cd frontend && npm run dev",
         "dev:admin": "cd admin && npm run dev",
-        "build:frontend": "cd frontend && npm run build",
-        "build:admin": "cd admin && npm run build",
         "seed": "node api/seeder.js"
     },
     "dependencies": {
