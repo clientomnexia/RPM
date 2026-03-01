@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load env vars from root .env
+// Load env vars from root .env (for local dev)
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const connectDB = require('./config/db');
@@ -27,7 +27,12 @@ app.use(async (req, res, next) => {
         await connectDB();
         next();
     } catch (error) {
-        res.status(500).json({ message: 'Database connection failed' });
+        console.error('DATABASE ERROR:', error.message);
+        res.status(500).json({
+            message: 'Database connection failed',
+            error: error.message,
+            stack: process.env.NODE_ENV === 'production' ? null : error.stack
+        });
     }
 });
 

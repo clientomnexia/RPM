@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
 
-let isConnected = false;
-
 const connectDB = async () => {
-    if (isConnected) {
-        console.log('Using existing MongoDB connection');
+    // Check if already connected (readyState 1)
+    if (mongoose.connection.readyState >= 1) {
         return;
     }
 
     try {
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI is not defined in environment variables');
+        }
+
         const conn = await mongoose.connect(process.env.MONGODB_URI);
-        isConnected = true;
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error(`MongoDB Connection Error: ${error.message}`);
