@@ -21,6 +21,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health Check & Root Route
+app.get('/', (req, res) => {
+    res.send('Raj Pan Mahal API is running');
+});
+
 // Connect to Database on each request
 app.use(async (req, res, next) => {
     try {
