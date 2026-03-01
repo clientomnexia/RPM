@@ -5,18 +5,38 @@ const Product = require('./models/Product');
 const Franchise = require('./models/Franchise');
 const User = require('./models/User');
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// Load environment variables from the root .env file
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const importData = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        const uri = process.env.MONGODB_URI;
 
+        if (!uri) {
+            console.error('ERROR: MONGODB_URI is not defined in your root .env file.');
+            process.exit(1);
+        }
+
+        if (uri.includes('localhost')) {
+            console.warn('WARNING: You are seeding a LOCAL database. To seed production, update MONGODB_URI in the root .env to your Atlas string.');
+        }
+
+        console.log('Connecting to database for seeding...');
+        await mongoose.connect(uri);
+        console.log('Connected!');
+
+        console.log('Cleaning existing data...');
         await Product.deleteMany();
         await Franchise.deleteMany();
         await User.deleteMany();
 
         const users = [
-            { name: 'Admin User', email: 'admin@example.com', password: 'password123', isAdmin: true },
+            {
+                name: 'Admin User',
+                email: 'admin@example.com',
+                password: 'password123',
+                isAdmin: true
+            },
         ];
 
         const products = [
@@ -36,18 +56,20 @@ const importData = async () => {
             { name: "Royal Franchise", investmentAmount: 500000, requiredArea: "500+ sq ft", expectedROI: "18-24 Months", duration: "Lifetime", description: "Full-scale luxury franchise with exclusive rights and marketing." }
         ];
 
-        // Use Loop with .save() to trigger pre-save hooks (password hashing)
+        console.log('Seeding users...');
         for (const user of users) {
-            await new User(user).save();
+            const newUser = new User(user);
+            await newUser.save();
         }
 
+        console.log('Seeding products and franchises...');
         await Product.insertMany(products);
         await Franchise.insertMany(franchises);
 
-        console.log('Data Imported!');
+        console.log('Data Successfully Imported!');
         process.exit();
     } catch (error) {
-        console.error(`${error}`);
+        console.error(`SEEDING ERROR: ${error.message}`);
         process.exit(1);
     }
 };
