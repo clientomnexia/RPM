@@ -6,11 +6,11 @@ const authUser = async (req, res) => {
 
     try {
         const user = await User.findOne({ email });
-        
+
         if (user) {
             const isMatch = await user.matchPassword(password);
             console.log(`Login attempt for ${email}: User found, password match: ${isMatch}`);
-            
+
             if (isMatch) {
                 return res.json({
                     _id: user._id,
@@ -21,11 +21,15 @@ const authUser = async (req, res) => {
                 });
             }
         }
-        
+
         console.log(`Login attempt for ${email}: Failed`);
         res.status(401).json({ message: 'Invalid email or password' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('AUTH ERROR:', error.message);
+        res.status(500).json({
+            message: 'Server error during authentication',
+            error: error.message
+        });
     }
 };
 
@@ -58,7 +62,11 @@ const registerUser = async (req, res) => {
             res.status(400).json({ message: 'Invalid user data' });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('REGISTER ERROR:', error.message);
+        res.status(500).json({
+            message: 'Server error during registration',
+            error: error.message
+        });
     }
 };
 
