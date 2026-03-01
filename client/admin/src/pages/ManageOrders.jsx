@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 
 const ManageOrders = () => {
@@ -10,7 +11,7 @@ const ManageOrders = () => {
     }, []);
 
     const fetchOrders = async () => {
-        const { data } = await axios.get('/api/orders');
+        const { data } = await axios.get(`${API_URL}/api/orders`);
         setOrders(data);
     };
 

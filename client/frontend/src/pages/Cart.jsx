@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
+import API_URL from '../config';
 import { Trash2, Plus, Minus } from 'lucide-react';
 
 
@@ -24,7 +25,7 @@ const Cart = () => {
                 })),
                 totalPrice: cartTotal
             };
-            await axios.post('/api/orders', orderData);
+            await axios.post(`${API_URL}/api/orders`, orderData);
             setOrderPlaced(true);
             clearCart();
         } catch (error) {

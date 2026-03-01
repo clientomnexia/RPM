@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 
 const ManageProducts = () => {
@@ -15,7 +16,7 @@ const ManageProducts = () => {
     }, []);
 
     const fetchProducts = async () => {
-        const { data } = await axios.get('/api/products');
+        const { data } = await axios.get(`${API_URL}/api/products`);
         const updatedData = data.map(p => ({
             ...p,
             displayImage: p.image // Relative pathing or URL works directly in production
@@ -47,9 +48,9 @@ const ManageProducts = () => {
             };
 
             if (editId) {
-                await axios.put(`/api/products/${editId}`, data, config);
+                await axios.put(`${API_URL}/api/products/${editId}`, data, config);
             } else {
-                await axios.post('/api/products', data, config);
+                await axios.post(`${API_URL}/api/products`, data, config);
             }
             setShowModal(false);
             setEditId(null);
@@ -83,7 +84,7 @@ const ManageProducts = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Delete this product?')) {
-            await axios.delete(`/api/products/${id}`);
+            await axios.delete(`${API_URL}/api/products/${id}`);
             fetchProducts();
         }
     };

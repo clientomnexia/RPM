@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 
 const ManageFranchise = () => {
@@ -13,7 +14,7 @@ const ManageFranchise = () => {
     }, []);
 
     const fetchFranchises = async () => {
-        const { data } = await axios.get('/api/franchise');
+        const { data } = await axios.get(`${API_URL}/api/franchise`);
         setFranchises(data);
     };
 
@@ -21,9 +22,9 @@ const ManageFranchise = () => {
         e.preventDefault();
         try {
             if (editId) {
-                await axios.put(`/api/franchise/${editId}`, formData);
+                await axios.put(`${API_URL}/api/franchise/${editId}`, formData);
             } else {
-                await axios.post('/api/franchise', formData);
+                await axios.post(`${API_URL}/api/franchise`, formData);
             }
             setShowModal(false);
             setEditId(null);
@@ -42,7 +43,7 @@ const ManageFranchise = () => {
 
     const handleDelete = async (id) => {
         if (window.confirm('Delete this franchise plan?')) {
-            await axios.delete(`/api/franchise/${id}`);
+            await axios.delete(`${API_URL}/api/franchise/${id}`);
             fetchFranchises();
         }
     };

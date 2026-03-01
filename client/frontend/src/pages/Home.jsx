@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { useCart } from '../context/CartContext';
 
 
@@ -12,7 +13,7 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get('/api/products');
+                const { data } = await axios.get(`${API_URL}/api/products`);
                 // Prepend backend URL if image is a relative path
                 const updatedData = data.map(p => ({
                     ...p,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 
 const Contact = () => {
@@ -9,7 +10,7 @@ const Contact = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/contact', formData);
+            await axios.post(`${API_URL}/api/contact`, formData);
             setSubmitted(true);
         } catch (error) {
             console.error("Message failed", error);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { Package, Briefcase, ShoppingBag, Mail, PlusCircle, ExternalLink } from 'lucide-react';
 
 
@@ -15,10 +16,10 @@ const Dashboard = () => {
                     }
                 };
                 const [p, f, o, m] = await Promise.all([
-                    axios.get('/api/products'),
-                    axios.get('/api/franchise'),
-                    axios.get('/api/orders', config),
-                    axios.get('/api/contact', config)
+                    axios.get(`${API_URL}/api/products`),
+                    axios.get(`${API_URL}/api/franchise`),
+                    axios.get(`${API_URL}/api/orders`, config),
+                    axios.get(`${API_URL}/api/contact`, config)
                 ]);
                 setStats({
                     products: p.data.length,

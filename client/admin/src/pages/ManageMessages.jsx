@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 
 const ManageMessages = () => {
@@ -10,13 +11,13 @@ const ManageMessages = () => {
     }, []);
 
     const fetchMessages = async () => {
-        const { data } = await axios.get('/api/contact');
+        const { data } = await axios.get(`${API_URL}/api/contact`);
         setMessages(data);
     };
 
     const handleDelete = async (id) => {
         if (window.confirm('Delete this message?')) {
-            await axios.delete(`/api/contact/${id}`);
+            await axios.delete(`${API_URL}/api/contact/${id}`);
             fetchMessages();
         }
     };

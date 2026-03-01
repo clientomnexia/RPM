@@ -1,0 +1,11 @@
+{
+    "name": "rpm-client",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "build": "npm run clean && npm run build:frontend && npm run build:admin",
+        "clean": "rm -rf dist && mkdir -p dist",
+        "build:frontend": "cd frontend && npm install && npm run build && cp -r dist/* ../dist/",
+        "build:admin": "cd admin && npm install && npm run build && mkdir -p ../dist/admin && cp -r dist/* ../dist/admin/"
+    }
+}

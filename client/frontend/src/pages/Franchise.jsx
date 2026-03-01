@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 import { useCart } from '../context/CartContext';
 
 
@@ -10,7 +11,7 @@ const Franchise = () => {
     useEffect(() => {
         const fetchFranchises = async () => {
             try {
-                const { data } = await axios.get('/api/franchise');
+                const { data } = await axios.get(`${API_URL}/api/franchise`);
                 setFranchises(data);
             } catch (error) {
                 console.error("Error fetching franchises", error);
