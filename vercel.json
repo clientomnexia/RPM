@@ -8,11 +8,11 @@
             "destination": "/api/index.js"
         },
         {
-            "source": "/admin/((?!assets|.*\\.).*)",
+            "source": "/admin/:path*",
             "destination": "/admin/index.html"
         },
         {
-            "source": "/((?!api|admin|assets|.*\\.).*)",
+            "source": "/((?!api|admin).*)",
             "destination": "/index.html"
         }
     ]
