@@ -6,15 +6,15 @@ const path = require('path');
 // Load env vars
 dotenv.config();
 
-const connectDB = require('./config/db');
+const connectDB = require('../src/config/db');
 
 // Import Routes
-const productRoutes = require('./routes/productRoutes');
-const franchiseRoutes = require('./routes/franchiseRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const userRoutes = require('./routes/userRoutes');
-const { protect, admin } = require('./middleware/authMiddleware');
+const productRoutes = require('../src/routes/productRoutes');
+const franchiseRoutes = require('../src/routes/franchiseRoutes');
+const orderRoutes = require('../src/routes/orderRoutes');
+const contactRoutes = require('../src/routes/contactRoutes');
+const userRoutes = require('../src/routes/userRoutes');
+const { protect, admin } = require('../src/middleware/authMiddleware');
 
 const app = express();
 
