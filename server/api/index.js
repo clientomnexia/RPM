@@ -25,9 +25,10 @@ const app = express();
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
     : [
-        'https://rpm-pg38.vercel.app',   // Frontend (production)
-        'http://localhost:5173',          // Frontend (dev)
-        'http://localhost:5174',          // Admin (dev)
+        'https://rpm-frontend-ten.vercel.app', // Frontend (production)
+        'https://rpm-admin.vercel.app',        // Admin (production)
+        'http://localhost:5173',               // Frontend (dev)
+        'http://localhost:5174',               // Admin (dev)
     ];
 
 app.use(cors({
