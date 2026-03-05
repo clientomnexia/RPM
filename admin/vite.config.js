@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/admin/',
+  // No base path — admin is deployed as its own standalone app
   server: {
     port: 5174,
     proxy: {

@@ -9,10 +9,15 @@ import Login from './pages/Login';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+/**
+ * Admin Panel App
+ * Deployed as a standalone app (no /admin basename).
+ * Works both locally (localhost:5174) and in production.
+ */
 function App() {
   return (
     <AuthProvider>
-      <Router basename="/admin">
+      <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>

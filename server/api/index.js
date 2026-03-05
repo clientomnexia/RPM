@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path');
 
 // Load env vars
 dotenv.config();
@@ -18,7 +17,30 @@ const authRoutes = require('../src/routes/authRoutes');
 
 const app = express();
 
-app.use(cors());
+/**
+ * CORS Configuration
+ * Allows requests from frontend, admin, and localhost (dev).
+ * ALLOWED_ORIGINS env var can override with comma-separated URLs.
+ */
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+    : [
+        'https://rpm-pg38.vercel.app',   // Frontend (production)
+        'http://localhost:5173',          // Frontend (dev)
+        'http://localhost:5174',          // Admin (dev)
+    ];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+}));
 app.use(express.json());
 
 // Health Check & Root Route
