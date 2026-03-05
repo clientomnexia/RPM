@@ -14,7 +14,7 @@ const franchiseRoutes = require('../src/routes/franchiseRoutes');
 const orderRoutes = require('../src/routes/orderRoutes');
 const contactRoutes = require('../src/routes/contactRoutes');
 const userRoutes = require('../src/routes/userRoutes');
-const { protect, admin } = require('../src/middleware/authMiddleware');
+const authRoutes = require('../src/routes/authRoutes');
 
 const app = express();
 
@@ -46,7 +46,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/franchise', franchiseRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/orders', protect, admin, orderRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/orders', orderRoutes); // Auth handled per-route in orderRoutes.js
 
 // Health Check
 app.get('/api', (req, res) => {

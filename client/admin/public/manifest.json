@@ -1,0 +1,21 @@
+{
+    "short_name": "RPM Admin",
+    "name": "RPM Admin Panel",
+    "description": "Management dashboard for Raj Pan Mahal.",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}

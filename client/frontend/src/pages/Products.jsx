@@ -9,7 +9,7 @@ const Products = () => {
     const [category, setCategory] = useState('All');
     const { addToCart } = useCart();
 
-    const categories = ['All', 'Pan', 'Cigarettes', 'Tobacco', 'Cold drinks', 'Snacks', 'Combo'];
+    const categories = ['All', 'Pan', 'Snacks', 'Combo'];
 
     useEffect(() => {
         const fetchProducts = async () => {

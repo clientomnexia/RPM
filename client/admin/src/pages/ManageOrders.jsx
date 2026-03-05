@@ -11,8 +11,17 @@ const ManageOrders = () => {
     }, []);
 
     const fetchOrders = async () => {
-        const { data } = await axios.get(`${API_URL}/api/orders`);
-        setOrders(data);
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('adminInfo'))?.token}`
+                }
+            };
+            const { data } = await axios.get(`${API_URL}/api/orders`, config);
+            setOrders(data);
+        } catch (error) {
+            console.error("Failed to fetch orders", error);
+        }
     };
 
     return (

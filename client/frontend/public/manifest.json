@@ -1,0 +1,21 @@
+{
+    "short_name": "RPM",
+    "name": "Raj Pan Mahal - Premium E-Commerce",
+    "description": "Premium E-commerce platform for Pan, Cigarettes, and Snacks.",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}

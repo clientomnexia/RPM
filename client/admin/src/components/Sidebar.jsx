@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Package, Briefcase, Mail, ShoppingBag, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import BRANDING from '../branding';
 import logo from '../assets/logo.png';
 
 const Sidebar = () => {
@@ -10,8 +11,8 @@ const Sidebar = () => {
     return (
         <aside className="sidebar">
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <img src={logo} alt="RPM Admin" style={{ height: '80px', objectFit: 'contain' }} />
-                <h2 style={{ fontSize: '1rem', marginTop: '0.5rem' }}>RPM ADMIN</h2>
+                <img src={logo} alt={BRANDING.logoAlt} style={{ height: '80px', objectFit: 'contain' }} />
+                <h2 style={{ fontSize: '1rem', marginTop: '0.5rem' }}>{BRANDING.appName} ADMIN</h2>
             </div>
             <ul className="sidebar-links">
                 <li>
