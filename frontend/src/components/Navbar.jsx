@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import logo from '../assets/logo.png';
+import InstallApp from './InstallApp';
 
 const Navbar = () => {
     const { cartCount } = useCart();
@@ -36,6 +37,7 @@ const Navbar = () => {
                 </ul>
 
                 <div className="nav-actions">
+                    <InstallApp />
                     {/* User Auth Area */}
                     {user ? (
                         <div className="user-menu-wrapper" onMouseEnter={() => setShowUserMenu(true)} onMouseLeave={() => setShowUserMenu(false)}>

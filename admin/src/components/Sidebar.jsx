@@ -4,6 +4,7 @@ import { LayoutDashboard, Package, Briefcase, Mail, ShoppingBag, LogOut } from '
 import { useAuth } from '../context/AuthContext';
 import BRANDING from '../branding';
 import logo from '../assets/logo.png';
+import InstallApp from './InstallApp';
 
 const Sidebar = () => {
     const { logout } = useAuth();
@@ -40,7 +41,8 @@ const Sidebar = () => {
                         <Mail size={20} /> Manage Messages
                     </NavLink>
                 </li>
-                <li style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+                <li style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                    <InstallApp />
                     <button onClick={logout} className="logout-btn" style={{ width: '100%', background: 'transparent', border: '1px solid #333', color: '#a0a0a0', display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.8rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>
                         <LogOut size={20} /> Logout
                     </button>
