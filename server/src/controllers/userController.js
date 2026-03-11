@@ -2,18 +2,27 @@ const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
 const authUser = async (req, res) => {
-    const { email, password } = req.body;
-    const normalizedEmail = email.toLowerCase();
+    let { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Please provide email and password' });
+    }
+
+    email = email.toLowerCase().trim();
+    password = password.trim();
 
     try {
-        console.log(`ATTEMPTING LOGIN: ${normalizedEmail}`);
-        const user = await User.findOne({ email: normalizedEmail });
+        console.log(`ATTEMPTING LOGIN: ${email}`);
+        const user = await User.findOne({ email });
 
         if (user) {
             const isMatch = await user.matchPassword(password);
-            console.log(`USER FOUND: ${normalizedEmail}, MATCH: ${isMatch}, ADMIN: ${user.isAdmin}`);
+            console.log(`USER FOUND: ${email}, MATCH: ${isMatch}, ADMIN: ${user.isAdmin}`);
 
             if (isMatch) {
+                if (!user.isAdmin) {
+                    return res.status(403).json({ message: 'Access denied: You are not an admin' });
+                }
                 return res.json({
                     _id: user._id,
                     name: user.name,
@@ -24,7 +33,7 @@ const authUser = async (req, res) => {
             }
         }
 
-        console.log(`Login attempt for ${email}: Failed`);
+        console.log(`Login attempt for ${email}: Failed (incorrect credentials)`);
         res.status(401).json({ message: 'Invalid email or password' });
     } catch (error) {
         console.error('AUTH ERROR:', error.message);

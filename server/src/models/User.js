@@ -3,7 +3,13 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = mongoose.Schema({
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
     password: { type: String }, // Optional for Google OAuth users
     googleId: { type: String }, // Google OAuth unique identifier
     avatar: { type: String }, // Profile picture URL from Google

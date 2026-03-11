@@ -35,9 +35,13 @@ const seedData = async (req, res) => {
             { name: "Royal Franchise", investmentAmount: 500000, requiredArea: "500+ sq ft", expectedROI: "18-24 Months", duration: "Lifetime", description: "Full-scale luxury franchise with exclusive rights and marketing." }
         ];
 
-        await User.create(adminUser);
+        const user = await User.create(adminUser);
         await Product.insertMany(products);
         await Franchise.insertMany(franchises);
+
+        // SELF-TEST: Verify the password matches immediately
+        const testMatch = await user.matchPassword(password);
+        console.log(`SEED SELF-TEST: Email: ${email}, Match: ${testMatch}`);
 
         res.json({
             message: 'Data Seeded Successfully!',
@@ -45,7 +49,8 @@ const seedData = async (req, res) => {
                 email,
                 password,
                 note: 'Please use these EXACT credentials to login.'
-            }
+            },
+            selfTest: testMatch ? 'Passed' : 'Failed'
         });
     } catch (error) {
         res.status(500).json({ message: 'Seeding failed', error: error.message });
