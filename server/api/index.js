@@ -65,6 +65,8 @@ app.use(async (req, res, next) => {
 });
 
 // Routes
+const seedRoutes = require('../src/routes/seedRoutes');
+app.use('/api/seed', seedRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/franchise', franchiseRoutes);
 app.use('/api/contact', contactRoutes);
