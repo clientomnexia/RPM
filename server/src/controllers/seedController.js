@@ -8,10 +8,13 @@ const seedData = async (req, res) => {
         await Franchise.deleteMany();
         await User.deleteMany();
 
+        const email = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
+        const password = process.env.ADMIN_PASSWORD || 'admin123';
+
         const adminUser = {
             name: 'Admin User',
-            email: process.env.ADMIN_EMAIL || 'admin@rpm.com',
-            password: process.env.ADMIN_PASSWORD || 'admin123',
+            email,
+            password,
             isAdmin: true
         };
 
