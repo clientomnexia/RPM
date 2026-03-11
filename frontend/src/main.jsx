@@ -15,12 +15,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <App />
     </GoogleOAuthProvider>
-    );
+  </React.StrictMode>
+);
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW registered: ', reg))
-          .catch(err => console.log('SW failure: ', err));
-      });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW registered: ', reg))
+      .catch(err => console.log('SW failure: ', err));
+  });
 }
