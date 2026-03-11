@@ -9,13 +9,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-// Service Worker Registration for PWA (Web APK support)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.worker = navigator.serviceWorker.register('/sw.js').then(registration => {
-      console.log('Admin SW registered: ', registration);
-    }).catch(registrationError => {
-      console.log('Admin SW registration failed: ', registrationError);
-    });
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Admin SW registered: ', reg))
+      .catch(err => console.log('Admin SW failure: ', err));
   });
 }

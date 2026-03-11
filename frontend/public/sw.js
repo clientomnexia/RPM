@@ -1,9 +1,8 @@
-const CACHE_NAME = 'rpm-v1';
+const CACHE_NAME = 'rpm-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/src/main.jsx',
-    '/logo.png'
+    '/manifest.json'
 ];
 
 self.addEventListener('install', event => {

@@ -31,7 +31,7 @@ const Products = () => {
         <section className="container">
             <h2 style={{ textAlign: 'center', margin: '3rem 0', color: '#d4af37' }}>Our Products</h2>
 
-            <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem' }}>
                 {categories.map(cat => (
                     <button
                         key={cat}
