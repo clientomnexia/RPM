@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
-const Product = require('./models/Product');
-const Franchise = require('./models/Franchise');
-const User = require('./models/User');
+const Product = require('./src/models/Product');
+const Franchise = require('./src/models/Franchise');
+const User = require('./src/models/User');
 
-// Load environment variables from the root .env file
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+// Load environment variables from the server .env file
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const importData = async () => {
     try {
@@ -33,8 +33,8 @@ const importData = async () => {
         const users = [
             {
                 name: 'Admin User',
-                email: 'admin@example.com',
-                password: 'password123',
+                email: process.env.ADMIN_EMAIL || 'admin@example.com',
+                password: process.env.ADMIN_PASSWORD || 'password123',
                 isAdmin: true
             },
         ];
