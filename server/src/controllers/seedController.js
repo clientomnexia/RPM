@@ -39,7 +39,14 @@ const seedData = async (req, res) => {
         await Product.insertMany(products);
         await Franchise.insertMany(franchises);
 
-        res.json({ message: 'Data Seeded Successfully!' });
+        res.json({
+            message: 'Data Seeded Successfully!',
+            credentials: {
+                email,
+                password,
+                note: 'Please use these EXACT credentials to login.'
+            }
+        });
     } catch (error) {
         res.status(500).json({ message: 'Seeding failed', error: error.message });
     }
