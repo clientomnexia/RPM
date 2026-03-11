@@ -4,8 +4,7 @@ const multer = require('multer');
 const { getProducts, getProductById, createProduct, updateProduct, deleteProduct } = require('../controllers/productController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Use memory storage instead of disk storage for Vercel (read-only filesystem)
-const storage = multer.memoryStorage();
+const { storage } = require('../config/cloudinary');
 const upload = multer({ storage });
 
 router.route('/')

@@ -28,9 +28,7 @@ const createProduct = async (req, res) => {
         let image = req.body.image;
 
         if (req.file) {
-            // In production on Vercel, you'd upload req.file.buffer to a cloud storage service
-            // For now, use the image URL from the request body if provided
-            console.warn('File upload received but disk storage is not available on Vercel. Use an image URL instead.');
+            image = req.file.path; // Cloudinary URL
         }
 
         const product = new Product({ name, description, price, image, category, stock });
@@ -47,8 +45,7 @@ const updateProduct = async (req, res) => {
         let image = req.body.image;
 
         if (req.file) {
-            // In production on Vercel, you'd upload req.file.buffer to a cloud storage service
-            console.warn('File upload received but disk storage is not available on Vercel. Use an image URL instead.');
+            image = req.file.path; // Cloudinary URL
         }
 
         const product = await Product.findById(req.params.id);
