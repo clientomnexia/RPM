@@ -13,8 +13,10 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
         <div className="col-span-1 lg:col-span-2">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-red-800 rounded-lg flex items-center justify-center text-white font-serif text-xl">R</div>
-            <h1 className="text-2xl font-serif font-bold tracking-tight text-white">RAJWADA</h1>
+            <div className="w-10 h-10 bg-red-800 rounded-lg flex items-center justify-center overflow-hidden">
+               <img src="/logo.png" alt="Rajwada Logo" className="w-full h-full object-contain" />
+            </div>
+            <h1 className="text-2xl font-serif font-bold tracking-tight text-white uppercase">RAJWADA</h1>
           </div>
           <p className="max-w-sm mb-8 leading-relaxed text-stone-500 text-sm">
             Preserving the 400-year-old tradition of Indian hospitality. Handcrafted with luxury, taste, and absolute hygiene in the heart of Indore.

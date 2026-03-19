@@ -12,6 +12,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
+import logo from '../assets/logo.png';
+
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, logout, loginWithFirebase } = useAuth(); // Assuming we'll add loginWithFirebase
@@ -33,7 +35,9 @@ const Navbar = () => {
         <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-amber-100 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo(0,0)}>
-                    <div className="w-12 h-12 bg-red-800 rounded-xl flex items-center justify-center text-white font-serif text-2xl shadow-xl group-hover:rotate-6 transition-transform">R</div>
+                    <div className="w-12 h-12 bg-red-800 rounded-xl flex items-center justify-center overflow-hidden shadow-xl group-hover:rotate-6 transition-transform">
+                        <img src={logo} alt="Rajwada Logo" className="w-full h-full object-contain" />
+                    </div>
                     <div>
                         <h1 className="text-xl font-serif font-black tracking-tighter text-red-950 leading-none">RAJWADA</h1>
                         <p className="text-[10px] tracking-[0.2em] uppercase font-bold text-amber-600">Paan Mahal</p>
