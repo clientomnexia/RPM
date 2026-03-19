@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  Instagram, 
-  Facebook, 
-  MapPin, 
-  Phone 
+import {
+  Instagram,
+  Facebook,
+  MapPin,
+  Phone
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -36,8 +36,8 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-bold mb-8 uppercase tracking-widest text-[10px]">Contact</h4>
           <div className="space-y-4 text-sm">
-             <p className="flex gap-3 items-start"><MapPin size={18} className="text-red-800 flex-shrink-0" /> Indore, MP 452001</p>
-             <p className="flex gap-3 items-center"><Phone size={18} className="text-red-800" /> +91 98765 43210</p>
+            <p className="flex gap-3 items-start"><MapPin size={18} className="text-red-800 flex-shrink-0" />66, Nallurahalli Main Rd, Palm Meadows, Nallurhalli, Whitefield, Bengaluru, Karnataka 560066</p>
+            <p className="flex gap-3 items-center"><Phone size={18} className="text-red-800" /> +91 9559582937 </p>
           </div>
         </div>
       </div>
