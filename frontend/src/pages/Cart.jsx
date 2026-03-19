@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { GoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import API_URL from '../config';
-import { Trash2, Plus, Minus, ShieldCheck } from 'lucide-react';
+import { 
+  Trash2, 
+  Plus, 
+  Minus, 
+  ShoppingBag, 
+  ArrowRight, 
+  CheckCircle,
+  Loader2,
+  ShieldCheck,
+  MapPin,
+  Phone
+} from 'lucide-react';
 
-/**
- * Cart Page
- * Requires Google authentication before checkout.
- * Auto-fills name/email from Google profile.
- */
 const Cart = () => {
-    const { cartItems, removeFromCart, updateQty, clearCart, cartTotal } = useCart();
-    const { user, loginWithGoogle } = useAuth();
+    const { cartItems, removeFromCart, updateQty, clearCart, cartTotal, cartCount } = useCart();
+    const { user, loginWithFirebase } = useAuth();
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [userInfo, setUserInfo] = useState({ phone: '', address: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,25 +36,17 @@ const Cart = () => {
                     phone: userInfo.phone,
                     address: userInfo.address,
                 },
-                googleUser: {
-                    googleId: user._id,
-                    name: user.name,
-                    email: user.email,
-                    avatar: user.avatar,
-                },
                 orderItems: cartItems.map(item => ({
                     name: item.name,
                     qty: item.qty,
-                    image: item.image || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400',
+                    image: item.image,
                     price: item.price || item.investmentAmount,
                     product: item._id,
                     itemModel: item.itemType || 'Product'
                 })),
                 totalPrice: cartTotal
             };
-            await axios.post(`${API_URL}/api/orders`, orderData, {
-                headers: { Authorization: `Bearer ${user.token}` }
-            });
+            await axios.post(`${API_URL}/api/orders`, orderData);
             setOrderPlaced(true);
             clearCart();
         } catch (error) {
@@ -60,113 +57,162 @@ const Cart = () => {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            await loginWithGoogle(credentialResponse);
-        } catch (err) {
-            console.error('Login failed', err);
-        }
-    };
-
-    // Order success screen
     if (orderPlaced) {
         return (
-            <div className="container" style={{ textAlign: 'center', padding: '5rem 0' }}>
-                <div className="order-success">
-                    <ShieldCheck size={64} color="#2d5a27" style={{ marginBottom: '1rem' }} />
-                    <h2 style={{ color: '#2d5a27' }}>Order Placed Successfully!</h2>
-                    <p style={{ color: '#a0a0a0', marginTop: '0.5rem' }}>Thank you for choosing Raj Pan Mahal. We will contact you soon.</p>
+            <div className="max-w-4xl mx-auto px-4 py-32 text-center animate-in zoom-in duration-500">
+                <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <CheckCircle size={48} className="text-green-600" />
+                </div>
+                <h2 className="text-4xl font-serif font-black text-stone-900 mb-4">Order Received!</h2>
+                <p className="text-stone-500 text-lg mb-10">
+                    Your royal selection is being prepared with the utmost care. We will contact you shortly.
+                </p>
+                <div className="flex justify-center">
+                    <button 
+                        onClick={() => window.location.href = '/'}
+                        className="px-10 py-5 bg-stone-900 text-white font-bold rounded-2xl hover:bg-stone-800 transition-all"
+                    >
+                        Return to Home
+                    </button>
                 </div>
             </div>
         );
     }
 
-    // Empty cart
-    if (cartItems.length === 0) {
+    if (cartCount === 0) {
         return (
-            <div className="container" style={{ textAlign: 'center', padding: '5rem 0' }}>
-                <h2>Your Cart is Empty</h2>
-                <p style={{ color: '#a0a0a0', marginTop: '0.5rem' }}>Add some products to get started!</p>
+            <div className="max-w-4xl mx-auto px-4 py-32 text-center animate-in fade-in">
+                <div className="w-24 h-24 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <ShoppingBag size={48} className="text-stone-200" />
+                </div>
+                <h2 className="text-3xl font-serif font-bold text-stone-900 mb-4">Your Bag is Empty</h2>
+                <p className="text-stone-500 mb-10">Add some masterpieces to your selection to get started.</p>
+                <button 
+                    onClick={() => window.location.href = '/products'}
+                    className="px-8 py-4 bg-red-800 text-white font-bold rounded-2xl hover:bg-red-700 transition-all"
+                >
+                    Browse Menu
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="container" style={{ padding: '4rem 0' }}>
-            <h2 style={{ marginBottom: '2rem', color: '#d4af37' }}>Your Cart</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '3rem' }}>
-                {/* Cart Items */}
-                <div>
+        <div className="max-w-7xl mx-auto px-4 py-16 pt-32 animate-in fade-in duration-700">
+            <h1 className="text-5xl font-serif font-black text-red-950 mb-12 uppercase tracking-tight">Your Selection</h1>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* Cart Items List */}
+                <div className="lg:col-span-7 space-y-6">
                     {cartItems.map(item => (
-                        <div key={item._id} style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '10px', marginBottom: '1rem' }}>
-                            <img src={item.image || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400'} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }} alt="" />
-                            <div style={{ flex: 1 }}>
-                                <h3>{item.name}</h3>
-                                <p style={{ color: '#d4af37' }}>₹{item.price || item.investmentAmount}</p>
+                        <div key={item._id} className="bg-white rounded-[2rem] p-6 border border-stone-100 flex gap-6 items-center hover:shadow-lg transition-all">
+                            <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0">
+                                <img 
+                                    src={item.image && item.image.startsWith('/uploads') ? `${API_URL}${item.image}` : item.image || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400'} 
+                                    alt={item.name} 
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                <button onClick={() => updateQty(item._id, item.qty - 1)}><Minus size={18} color="white" /></button>
-                                <span>{item.qty}</span>
-                                <button onClick={() => updateQty(item._id, item.qty + 1)}><Plus size={18} color="white" /></button>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-lg font-bold text-stone-900 truncate">{item.name}</h3>
+                                <p className="text-red-800 font-serif font-bold text-xl">₹{item.price || item.investmentAmount}</p>
+                                <div className="flex items-center gap-4 mt-4">
+                                    <div className="flex items-center bg-stone-100 rounded-xl p-1.5 px-3">
+                                        <button onClick={() => updateQty(item._id, item.qty - 1)} className="p-1 hover:bg-white rounded-lg transition-colors"><Minus size={16} /></button>
+                                        <span className="w-10 text-center font-black text-sm">{item.qty}</span>
+                                        <button onClick={() => updateQty(item._id, item.qty + 1)} className="p-1 hover:bg-white rounded-lg transition-colors"><Plus size={16} /></button>
+                                    </div>
+                                    <button 
+                                        onClick={() => removeFromCart(item._id)}
+                                        className="p-3 text-stone-300 hover:text-red-600 transition-colors"
+                                    >
+                                        <Trash2 size={20} />
+                                    </button>
+                                </div>
                             </div>
-                            <button onClick={() => removeFromCart(item._id)}><Trash2 size={24} color="#8b2635" /></button>
                         </div>
                     ))}
                 </div>
 
-                {/* Order Summary & Checkout */}
-                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2rem', borderRadius: '15px', height: 'fit-content' }}>
-                    <h3>Order Summary</h3>
-                    <div style={{ margin: '1.5rem 0', borderTop: '1px solid #333', paddingTop: '1rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <span>Subtotal</span>
-                            <span>₹{cartTotal}</span>
+                {/* Summary & Checkout Sidebar */}
+                <div className="lg:col-span-5">
+                    <div className="bg-stone-50 rounded-[2.5rem] p-8 md:p-10 border border-stone-100 sticky top-32">
+                        <h2 className="text-2xl font-serif font-bold text-stone-900 mb-8 border-b border-stone-200 pb-4">Order Summary</h2>
+                        
+                        <div className="space-y-4 mb-8">
+                            <div className="flex justify-between text-stone-500">
+                                <span>Subtotal</span>
+                                <span>₹{cartTotal}</span>
+                            </div>
+                            <div className="flex justify-between text-stone-500">
+                                <span>Delivery Fee</span>
+                                <span className="text-green-600 font-bold uppercase text-[10px] tracking-widest bg-green-50 px-2 py-1 rounded">Free</span>
+                            </div>
+                            <div className="flex justify-between items-center pt-4 border-t border-stone-200">
+                                <span className="text-xl font-bold text-stone-900">Total</span>
+                                <span className="text-3xl font-serif font-black text-red-950">₹{cartTotal}</span>
+                            </div>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                            <span>Total</span>
-                            <span style={{ color: '#d4af37' }}>₹{cartTotal}</span>
-                        </div>
+
+                        {!user ? (
+                            <div className="bg-amber-50 p-6 rounded-3xl border border-amber-100 text-center space-y-4">
+                                <ShieldCheck size={32} className="text-amber-600 mx-auto" />
+                                <p className="text-amber-900 font-bold">Secure Delivery Login</p>
+                                <p className="text-xs text-amber-700 leading-relaxed">
+                                    Please sign in with Google to confirm your royal delivery details.
+                                </p>
+                                <button 
+                                    onClick={loginWithFirebase}
+                                    className="w-full py-4 bg-white border border-stone-200 rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-stone-50 transition-all text-sm shadow-sm"
+                                >
+                                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="" />
+                                    Sign in with Google
+                                </button>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleCheckout} className="space-y-4">
+                                <div className="bg-white p-4 rounded-2xl border border-stone-100 flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center overflow-hidden">
+                                        {user.avatar ? <img src={user.avatar} alt="" /> : <Loader2 className="animate-spin text-white" />}
+                                    </div>
+                                    <div>
+                                        <p className="text-stone-900 font-bold text-sm leading-none mb-1">{user.name}</p>
+                                        <p className="text-xs text-stone-400">{user.email}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="relative group">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-red-800 transition-colors" size={18} />
+                                        <input 
+                                            type="tel" 
+                                            placeholder="Phone Number" 
+                                            required 
+                                            className="w-full pl-12 pr-4 py-4 bg-white border border-stone-200 rounded-2xl text-stone-900 focus:outline-none focus:border-red-800 transition-all placeholder:text-stone-300"
+                                            onChange={e => setUserInfo({ ...userInfo, phone: e.target.value })} 
+                                        />
+                                    </div>
+                                    <div className="relative group">
+                                        <MapPin className="absolute left-4 top-5 text-stone-400 group-focus-within:text-red-800 transition-colors" size={18} />
+                                        <textarea 
+                                            placeholder="Full Delivery Address" 
+                                            required 
+                                            className="w-full pl-12 pr-4 py-4 bg-white border border-stone-200 rounded-2xl text-stone-900 focus:outline-none focus:border-red-800 transition-all min-h-[120px] placeholder:text-stone-300"
+                                            onChange={e => setUserInfo({ ...userInfo, address: e.target.value })}
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    disabled={isSubmitting}
+                                    className="w-full py-5 bg-red-800 text-white font-black rounded-3xl hover:bg-red-900 transition-all shadow-xl shadow-red-900/20 disabled:bg-stone-300 flex items-center justify-center gap-3 mt-6 uppercase tracking-widest text-sm"
+                                >
+                                    {isSubmitting ? <Loader2 className="animate-spin" /> : <>Place Order <ArrowRight size={20} /></>}
+                                </button>
+                            </form>
+                        )}
                     </div>
-
-                    {/* Google Auth Gate */}
-                    {!user ? (
-                        <div className="google-auth-gate">
-                            <div style={{ textAlign: 'center', padding: '1.5rem', background: 'rgba(212,175,55,0.08)', borderRadius: '12px', border: '1px solid rgba(212,175,55,0.2)' }}>
-                                <ShieldCheck size={32} color="#d4af37" style={{ marginBottom: '0.5rem' }} />
-                                <p style={{ color: '#d4af37', fontWeight: '600', marginBottom: '0.5rem' }}>Sign in to Checkout</p>
-                                <p style={{ color: '#a0a0a0', fontSize: '0.85rem', marginBottom: '1rem' }}>Please sign in with your Google account to place your order</p>
-                                <div className="google-btn-wrapper">
-                                    <GoogleLogin
-                                        onSuccess={handleGoogleSuccess}
-                                        onError={() => console.log('Google Login Failed')}
-                                        theme="filled_black"
-                                        size="large"
-                                        text="signin_with"
-                                        shape="pill"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleCheckout}>
-                            {/* Auto-filled from Google */}
-                            <div style={{ background: 'rgba(45,90,39,0.15)', padding: '0.8rem 1rem', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                                {user.avatar && (
-                                    <img src={user.avatar} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%' }} referrerPolicy="no-referrer" />
-                                )}
-                                <div>
-                                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user.name}</div>
-                                    <div style={{ fontSize: '0.8rem', color: '#a0a0a0' }}>{user.email}</div>
-                                </div>
-                            </div>
-
-                            <input type="tel" placeholder="Phone Number" required style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', background: '#0a1f1a', border: '1px solid #333', color: 'white', borderRadius: '6px' }} onChange={e => setUserInfo({ ...userInfo, phone: e.target.value })} />
-                            <textarea placeholder="Delivery Address" required style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', background: '#0a1f1a', border: '1px solid #333', color: 'white', height: '100px', borderRadius: '6px' }} onChange={e => setUserInfo({ ...userInfo, address: e.target.value })}></textarea>
-                            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting}>
-                                {isSubmitting ? 'Placing Order...' : 'Place Order'}
-                            </button>
-                        </form>
-                    )}
                 </div>
             </div>
         </div>

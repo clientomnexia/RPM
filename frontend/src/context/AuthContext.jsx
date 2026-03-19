@@ -1,61 +1,63 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import axios from 'axios';
-import API_URL from '../config';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { 
+    auth 
+} from '../firebase';
+import { 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    onAuthStateChanged, 
+    signOut 
+} from 'firebase/auth';
 
-/**
- * AuthContext — Customer-side Google OAuth authentication.
- * Stores user data (name, email, avatar, token) in localStorage.
- * Provides loginWithGoogle(), logout(), and user state.
- */
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                setUser({
+                    uid: firebaseUser.uid,
+                    name: firebaseUser.displayName,
+                    email: firebaseUser.email,
+                    avatar: firebaseUser.photoURL,
+                });
+            } else {
+                setUser(null);
+            }
+            setLoading(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const loginWithFirebase = useCallback(async () => {
+        const provider = new GoogleAuthProvider();
         try {
-            const saved = localStorage.getItem('rpmUser');
-            return saved ? JSON.parse(saved) : null;
-        } catch {
-            return null;
-        }
-    });
-
-    /**
-     * Sends Google credential to backend for verification.
-     * Backend returns user data + JWT token.
-     */
-    const loginWithGoogle = useCallback(async (credentialResponse) => {
-        try {
-            const { data } = await axios.post(`${API_URL}/api/auth/google`, {
-                credential: credentialResponse.credential,
-            });
-
-            const userData = {
-                _id: data._id,
-                name: data.name,
-                email: data.email,
-                avatar: data.avatar,
-                token: data.token,
-            };
-
-            localStorage.setItem('rpmUser', JSON.stringify(userData));
-            setUser(userData);
-            return userData;
+            const result = await signInWithPopup(auth, provider);
+            // We don't necessarily need to call the backend if the user said "Backend as is"
+            // but if the backend expects a token for orders, we might need to handle that.
+            return result.user;
         } catch (error) {
-            console.error('Google login failed:', error);
+            console.error("Firebase login failed:", error);
             throw error;
         }
     }, []);
 
-    const logout = useCallback(() => {
-        localStorage.removeItem('rpmUser');
-        setUser(null);
+    const logout = useCallback(async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loginWithGoogle, logout }}>
-            {children}
+        <AuthContext.Provider value={{ user, loading, loginWithFirebase, logout }}>
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
