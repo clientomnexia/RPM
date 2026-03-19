@@ -35,7 +35,7 @@ const Navbar = () => {
         <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-amber-100 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-3 cursor-pointer group" onClick={() => window.scrollTo(0,0)}>
-                    <div className="w-12 h-12 bg-red-800 rounded-xl flex items-center justify-center overflow-hidden shadow-xl group-hover:rotate-6 transition-transform">
+                    <div className="w-14 h-14 flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
                         <img src={logo} alt="Rajwada Logo" className="w-full h-full object-contain" />
                     </div>
                     <div>
