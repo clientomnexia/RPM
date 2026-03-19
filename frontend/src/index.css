@@ -1,8 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;500;700;900&display=swap');
+
+@theme {
+  --color-red-950: #4a0e0e;
+  --color-red-900: #8B2635;
+  --color-red-800: #9b1c1c;
+  --color-amber-600: #d97706;
+  --color-amber-500: #f59e0b;
+  --color-stone-950: #0c0a09;
+  
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
 
 :root {
   --primary: #8b2635;
@@ -11,7 +21,7 @@
 }
 
 body {
-  @apply bg-[#fffdfa] text-gray-900;
+  @apply bg-[#fffdfa] text-gray-900 font-sans;
 }
 
 /* Custom scrollbar for better aesthetics */
@@ -25,12 +35,4 @@ body {
 
 ::-webkit-scrollbar-thumb {
   @apply bg-stone-200 rounded-full hover:bg-stone-300 transition-colors;
-}
-
-.font-serif {
-  font-family: 'Playfair Display', serif;
-}
-
-.font-sans {
-  font-family: 'Inter', sans-serif;
 }
