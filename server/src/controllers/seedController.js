@@ -1,12 +1,14 @@
 const Product = require('../models/Product');
 const Franchise = require('../models/Franchise');
 const User = require('../models/User');
+const Category = require('../models/Category');
 
 const seedData = async (req, res) => {
     try {
         await Product.deleteMany();
         await Franchise.deleteMany();
         await User.deleteMany();
+        await Category.deleteMany();
 
         const email = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
         const password = process.env.ADMIN_PASSWORD || 'admin123';
@@ -18,15 +20,19 @@ const seedData = async (req, res) => {
             isAdmin: true
         };
 
+        // Seed categories (matching frontend)
+        const categoryNames = ['Classic', 'Traditional', 'Modern', 'Signature', 'Gifts'];
+        await Category.insertMany(categoryNames.map(name => ({ name })));
+
         const products = [
-            { name: "Royal Meetha Pan", price: 50, description: "A sweet blend of gulkand, dates, and aromatic spices.", category: "Pan", stock: 100, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400" },
-            { name: "Saffron Special", price: 80, description: "Infused with pure saffron for a truly royal experience.", category: "Pan", stock: 50, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400" },
-            { name: "Classic Cigarette", price: 18, description: "Premium tobacco blend.", category: "Cigarettes", stock: 200, image: "https://images.unsplash.com/photo-1559811814-e2c57b5e69df?w=400" },
-            { name: "Cool Mint Mouth Freshener", price: 25, description: "Extra fresh minty sensation.", category: "Tobacco", stock: 150, image: "https://via.placeholder.com/400" },
-            { name: "Mango Delight Juice", price: 40, description: "Pure mango pulp refreshment.", category: "Cold drinks", stock: 80, image: "https://images.unsplash.com/photo-1546173159-315724a31696?w=400" },
-            { name: "Spicy Masala Chips", price: 20, description: "Crunchy potato chips with Indian spices.", category: "Snacks", stock: 120, image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400" },
-            { name: "Royal Combo", price: 150, description: "Royal Pan + Cold Drink + Snacks.", category: "Combo", stock: 30, image: "https://via.placeholder.com/400" },
-            { name: "Hookah Special Blend", price: 450, description: "Premium flavored tobacco for hookah.", category: "Tobacco", stock: 20, image: "https://via.placeholder.com/400" }
+            { name: "Royal Meetha Pan", price: 50, description: "A sweet blend of gulkand, dates, and aromatic spices.", category: "Classic", stock: 100, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400" },
+            { name: "Saffron Special", price: 80, description: "Infused with pure saffron for a truly royal experience.", category: "Signature", stock: 50, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400" },
+            { name: "Classic Cigarette", price: 18, description: "Premium tobacco blend.", category: "Classic", stock: 200, image: "https://images.unsplash.com/photo-1559811814-e2c57b5e69df?w=400" },
+            { name: "Cool Mint Mouth Freshener", price: 25, description: "Extra fresh minty sensation.", category: "Modern", stock: 150, image: "https://via.placeholder.com/400" },
+            { name: "Mango Delight Juice", price: 40, description: "Pure mango pulp refreshment.", category: "Modern", stock: 80, image: "https://images.unsplash.com/photo-1546173159-315724a31696?w=400" },
+            { name: "Spicy Masala Chips", price: 20, description: "Crunchy potato chips with Indian spices.", category: "Traditional", stock: 120, image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400" },
+            { name: "Royal Combo", price: 150, description: "Royal Pan + Cold Drink + Snacks.", category: "Gifts", stock: 30, image: "https://via.placeholder.com/400" },
+            { name: "Hookah Special Blend", price: 450, description: "Premium flavored tobacco for hookah.", category: "Traditional", stock: 20, image: "https://via.placeholder.com/400" }
         ];
 
         const franchises = [
@@ -45,6 +51,7 @@ const seedData = async (req, res) => {
 
         res.json({
             message: 'Data Seeded Successfully!',
+            categories: categoryNames,
             credentials: {
                 email,
                 password,

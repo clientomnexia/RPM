@@ -10,21 +10,25 @@ const Products = () => {
     const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
 
-    const categories = ['All', 'Classic', 'Traditional', 'Modern', 'Signature', 'Gifts'];
+    const [categories, setCategories] = useState(['All']);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchData = async () => {
             setLoading(true);
             try {
-                const { data } = await axios.get(`${API_URL}/api/products`);
-                setProducts(data);
+                const [prodRes, catRes] = await Promise.all([
+                    axios.get(`${API_URL}/api/products`),
+                    axios.get(`${API_URL}/api/categories`)
+                ]);
+                setProducts(prodRes.data);
+                setCategories(['All', ...catRes.data.map(c => c.name)]);
             } catch (error) {
-                console.error("Error fetching products", error);
+                console.error("Error fetching data", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProducts();
+        fetchData();
     }, []);
 
     const filteredProducts = filter === 'All' 

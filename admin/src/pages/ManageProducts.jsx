@@ -4,33 +4,96 @@ import API_URL from '../config';
 
 /**
  * ManageProducts Component
- * Provides a dashboard for administrators to Add, Edit, and Delete products.
- * Handles both file uploads and URL-based images.
+ * Provides a dashboard for administrators to:
+ * - Manage product categories (Add, Edit, Delete)
+ * - Add, Edit, and Delete products with dynamic category selection
  */
 const ManageProducts = () => {
-    // --- State Management ---
+    // --- Product State ---
     const [products, setProducts] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [formData, setFormData] = useState({ name: '', price: '', category: 'Pan', description: '', stock: '', image: '' });
+    const [formData, setFormData] = useState({ name: '', price: '', category: '', description: '', stock: '', image: '' });
     const [editId, setEditId] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
-    // Fetch products on component mount
+    // --- Category State ---
+    const [categories, setCategories] = useState([]);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [editingCategory, setEditingCategory] = useState(null);
+    const [editCategoryName, setEditCategoryName] = useState('');
+    const [showCategorySection, setShowCategorySection] = useState(false);
+
+    const getAuthConfig = (isMultipart = false) => {
+        const headers = {
+            Authorization: `Bearer ${localStorage.getItem('adminInfo') ? JSON.parse(localStorage.getItem('adminInfo')).token : ''}`
+        };
+        if (isMultipart) headers['Content-Type'] = 'multipart/form-data';
+        return { headers };
+    };
+
     useEffect(() => {
         fetchProducts();
+        fetchCategories();
     }, []);
 
-    /**
-     * Fetches all products from the backend API.
-     * Maps image paths to displayImage property for consistent rendering.
-     */
+    // ==================== CATEGORY FUNCTIONS ====================
+
+    const fetchCategories = async () => {
+        try {
+            const { data } = await axios.get(`${API_URL}/api/categories`);
+            setCategories(data);
+        } catch (error) {
+            console.error("Failed to fetch categories", error);
+        }
+    };
+
+    const handleAddCategory = async (e) => {
+        e.preventDefault();
+        if (!newCategoryName.trim()) return;
+        try {
+            await axios.post(`${API_URL}/api/categories`, { name: newCategoryName.trim() }, getAuthConfig());
+            setNewCategoryName('');
+            fetchCategories();
+        } catch (error) {
+            console.error("Failed to add category", error);
+            alert(error.response?.data?.message || "Error adding category.");
+        }
+    };
+
+    const handleUpdateCategory = async (id) => {
+        if (!editCategoryName.trim()) return;
+        try {
+            await axios.put(`${API_URL}/api/categories/${id}`, { name: editCategoryName.trim() }, getAuthConfig());
+            setEditingCategory(null);
+            setEditCategoryName('');
+            fetchCategories();
+        } catch (error) {
+            console.error("Failed to update category", error);
+            alert(error.response?.data?.message || "Error updating category.");
+        }
+    };
+
+    const handleDeleteCategory = async (id) => {
+        if (window.confirm('Are you sure you want to delete this category?')) {
+            try {
+                await axios.delete(`${API_URL}/api/categories/${id}`, getAuthConfig());
+                fetchCategories();
+            } catch (error) {
+                console.error("Failed to delete category", error);
+                alert("Failed to delete category.");
+            }
+        }
+    };
+
+    // ==================== PRODUCT FUNCTIONS ====================
+
     const fetchProducts = async () => {
         try {
             const { data } = await axios.get(`${API_URL}/api/products`);
             const updatedData = data.map(p => ({
                 ...p,
-                displayImage: p.image // Backend returns either a URL or a static path
+                displayImage: p.image
             }));
             setProducts(updatedData);
         } catch (error) {
@@ -38,10 +101,6 @@ const ManageProducts = () => {
         }
     };
 
-    /**
-     * Handles adding a new product or updating an existing one.
-     * Uses FormData to support multipart/form-data (image uploads).
-     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -52,32 +111,21 @@ const ManageProducts = () => {
             data.append('description', formData.description);
             data.append('stock', formData.stock);
 
-            // Append image file if selected, otherwise fallback to image URL/string
             if (imageFile) {
                 data.append('image', imageFile);
             } else {
                 data.append('image', formData.image);
             }
 
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${localStorage.getItem('adminInfo') ? JSON.parse(localStorage.getItem('adminInfo')).token : ''}`
-                }
-            };
-
             if (editId) {
-                // Update existing product
-                await axios.put(`${API_URL}/api/products/${editId}`, data, config);
+                await axios.put(`${API_URL}/api/products/${editId}`, data, getAuthConfig(true));
             } else {
-                // Create new product
-                await axios.post(`${API_URL}/api/products`, data, config);
+                await axios.post(`${API_URL}/api/products`, data, getAuthConfig(true));
             }
 
-            // Reset form and UI state
             setShowModal(false);
             setEditId(null);
-            setFormData({ name: '', price: '', category: 'Pan', description: '', stock: '', image: '' });
+            setFormData({ name: '', price: '', category: categories.length > 0 ? categories[0].name : '', description: '', stock: '', image: '' });
             setImageFile(null);
             setImagePreview(null);
             fetchProducts();
@@ -87,9 +135,6 @@ const ManageProducts = () => {
         }
     };
 
-    /**
-     * populates the modal with product data for editing.
-     */
     const handleEdit = (product) => {
         setEditId(product._id);
         setFormData(product);
@@ -97,9 +142,6 @@ const ManageProducts = () => {
         setShowModal(true);
     };
 
-    /**
-     * Handles local file selection and generates a preview.
-     */
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -112,19 +154,10 @@ const ManageProducts = () => {
         }
     };
 
-    /**
-     * Deletes a product after user confirmation.
-     * FIX: Added Authorization headers to allow server-side permission check.
-     */
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
             try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('adminInfo') ? JSON.parse(localStorage.getItem('adminInfo')).token : ''}`
-                    }
-                };
-                await axios.delete(`${API_URL}/api/products/${id}`, config);
+                await axios.delete(`${API_URL}/api/products/${id}`, getAuthConfig());
                 fetchProducts();
             } catch (error) {
                 console.error("Delete failed", error);
@@ -133,12 +166,115 @@ const ManageProducts = () => {
         }
     };
 
+    const openAddModal = () => {
+        setEditId(null);
+        setFormData({ name: '', price: '', category: categories.length > 0 ? categories[0].name : '', description: '', stock: '', image: '' });
+        setImageFile(null);
+        setImagePreview(null);
+        setShowModal(true);
+    };
+
     return (
         <div className="manage-products-container">
+            {/* Category Management Section */}
+            <div style={{ marginBottom: '2rem', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden' }}>
+                <button
+                    onClick={() => setShowCategorySection(!showCategorySection)}
+                    style={{
+                        width: '100%', padding: '1rem 1.5rem', background: '#1a1a2e', color: '#fff',
+                        border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: '600',
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                    }}
+                >
+                    <span>📁 Manage Categories ({categories.length})</span>
+                    <span style={{ fontSize: '1.2rem' }}>{showCategorySection ? '▲' : '▼'}</span>
+                </button>
+
+                {showCategorySection && (
+                    <div style={{ padding: '1.5rem', background: '#16213e' }}>
+                        {/* Add Category Form */}
+                        <form onSubmit={handleAddCategory} style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                            <input
+                                type="text"
+                                placeholder="New category name..."
+                                value={newCategoryName}
+                                onChange={e => setNewCategoryName(e.target.value)}
+                                style={{
+                                    flex: 1, padding: '0.6rem 1rem', borderRadius: '6px',
+                                    border: '1px solid #444', background: '#0f3460', color: '#fff', fontSize: '0.9rem'
+                                }}
+                            />
+                            <button type="submit" className="btn btn-add" style={{ whiteSpace: 'nowrap' }}>
+                                + Add Category
+                            </button>
+                        </form>
+
+                        {/* Category List */}
+                        {categories.length === 0 ? (
+                            <p style={{ color: '#888', textAlign: 'center' }}>No categories yet. Add one above.</p>
+                        ) : (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                {categories.map(cat => (
+                                    <div
+                                        key={cat._id}
+                                        style={{
+                                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                                            background: '#0f3460', padding: '0.5rem 1rem', borderRadius: '6px',
+                                            border: '1px solid #333'
+                                        }}
+                                    >
+                                        {editingCategory === cat._id ? (
+                                            <>
+                                                <input
+                                                    type="text"
+                                                    value={editCategoryName}
+                                                    onChange={e => setEditCategoryName(e.target.value)}
+                                                    style={{
+                                                        padding: '0.3rem 0.5rem', borderRadius: '4px',
+                                                        border: '1px solid #555', background: '#1a1a2e', color: '#fff',
+                                                        width: '120px', fontSize: '0.85rem'
+                                                    }}
+                                                    autoFocus
+                                                    onKeyDown={e => { if (e.key === 'Enter') handleUpdateCategory(cat._id); }}
+                                                />
+                                                <button
+                                                    onClick={() => handleUpdateCategory(cat._id)}
+                                                    style={{ background: 'none', border: 'none', color: '#4ecca3', cursor: 'pointer', fontSize: '1rem' }}
+                                                    title="Save"
+                                                >✓</button>
+                                                <button
+                                                    onClick={() => { setEditingCategory(null); setEditCategoryName(''); }}
+                                                    style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: '1rem' }}
+                                                    title="Cancel"
+                                                >✕</button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span style={{ color: '#fff', fontSize: '0.9rem', fontWeight: '500' }}>{cat.name}</span>
+                                                <button
+                                                    onClick={() => { setEditingCategory(cat._id); setEditCategoryName(cat.name); }}
+                                                    style={{ background: 'none', border: 'none', color: '#f39c12', cursor: 'pointer', fontSize: '0.85rem' }}
+                                                    title="Edit"
+                                                >✏️</button>
+                                                <button
+                                                    onClick={() => handleDeleteCategory(cat._id)}
+                                                    style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', fontSize: '0.85rem' }}
+                                                    title="Delete"
+                                                >🗑️</button>
+                                            </>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
             {/* Header Section */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1>Manage Products</h1>
-                <button className="btn btn-add" onClick={() => setShowModal(true)}>+ Add New Product</button>
+                <button className="btn btn-add" onClick={openAddModal}>+ Add New Product</button>
             </div>
 
             {/* Products Table */}
@@ -190,12 +326,13 @@ const ManageProducts = () => {
                         <div className="form-group">
                             <label>Category</label>
                             <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                                <option>Pan</option>
-                                <option>Cigarettes</option>
-                                <option>Tobacco</option>
-                                <option>Cold drinks</option>
-                                <option>Snacks</option>
-                                <option>Combo</option>
+                                {categories.length === 0 ? (
+                                    <option value="">No categories available</option>
+                                ) : (
+                                    categories.map(cat => (
+                                        <option key={cat._id} value={cat.name}>{cat.name}</option>
+                                    ))
+                                )}
                             </select>
                         </div>
                         <div className="form-group">
@@ -217,7 +354,7 @@ const ManageProducts = () => {
                                     value={formData.image}
                                     onChange={e => {
                                         setFormData({ ...formData, image: e.target.value });
-                                        setImageFile(null); // Clear file if URL is provided
+                                        setImageFile(null);
                                         setImagePreview(e.target.value);
                                     }}
                                 />

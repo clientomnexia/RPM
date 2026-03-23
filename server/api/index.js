@@ -9,6 +9,7 @@ const connectDB = require('../src/config/db');
 
 // Import Routes
 const productRoutes = require('../src/routes/productRoutes');
+const categoryRoutes = require('../src/routes/categoryRoutes');
 const franchiseRoutes = require('../src/routes/franchiseRoutes');
 const orderRoutes = require('../src/routes/orderRoutes');
 const contactRoutes = require('../src/routes/contactRoutes');
@@ -61,6 +62,7 @@ app.use(async (req, res, next) => {
 const seedRoutes = require('../src/routes/seedRoutes');
 app.use('/api/seed', seedRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/franchise', franchiseRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', userRoutes);
