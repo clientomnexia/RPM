@@ -37,6 +37,13 @@ const ManageProducts = () => {
         fetchCategories();
     }, []);
 
+    // Auto-select first category if none is selected in Add mode
+    useEffect(() => {
+        if (!editId && categories.length > 0 && !formData.category) {
+            setFormData(prev => ({ ...prev, category: categories[0].name }));
+        }
+    }, [categories, formData.category, editId]);
+
     // ==================== CATEGORY FUNCTIONS ====================
 
     const fetchCategories = async () => {
@@ -360,14 +367,11 @@ const ManageProducts = () => {
                         </div>
                         <div className="form-group">
                             <label>Category</label>
-                            <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })}>
-                                {categories.length === 0 ? (
-                                    <option value="">No categories available</option>
-                                ) : (
-                                    categories.map(cat => (
-                                        <option key={cat._id} value={cat.name}>{cat.name}</option>
-                                    ))
-                                )}
+                            <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
+                                <option value="">-- Select Category --</option>
+                                {categories.map(cat => (
+                                    <option key={cat._id} value={cat.name}>{cat.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="form-group">
