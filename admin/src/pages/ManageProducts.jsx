@@ -86,6 +86,20 @@ const ManageProducts = () => {
         }
     };
 
+    const handleSeedCategories = async () => {
+        if (window.confirm('This will populate the database with default categories (Classic, Traditional, Modern, Signature, Gifts). Continue?')) {
+            try {
+                await axios.get(`${API_URL}/api/seed`);
+                alert("Categories and sample products seeded successfully!");
+                fetchCategories();
+                fetchProducts();
+            } catch (error) {
+                console.error("Seeding failed", error);
+                alert("Failed to seed categories.");
+            }
+        }
+    };
+
     // ==================== PRODUCT FUNCTIONS ====================
 
     const fetchProducts = async () => {
@@ -103,6 +117,13 @@ const ManageProducts = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.category) {
+            alert("Please select or create a category first.");
+            setShowCategorySection(true);
+            return;
+        }
+
         try {
             const data = new FormData();
             data.append('name', formData.name);
@@ -206,6 +227,14 @@ const ManageProducts = () => {
                             />
                             <button type="submit" className="btn btn-add" style={{ whiteSpace: 'nowrap' }}>
                                 + Add Category
+                            </button>
+                            <button 
+                                type="button" 
+                                onClick={handleSeedCategories} 
+                                className="btn btn-edit" 
+                                style={{ background: '#3498db', whiteSpace: 'nowrap' }}
+                            >
+                                🌱 Seed Defaults
                             </button>
                         </form>
 

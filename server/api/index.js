@@ -74,24 +74,13 @@ app.get('/api', (req, res) => {
     res.send('Raj Pan Mahal API is running');
 });
 
-// Category Health Check
-app.get('/api/category-check', async (req, res) => {
-    try {
-        const Category = require('../src/models/Category');
-        const count = await Category.countDocuments();
-        res.json({ status: 'ok', count });
-    } catch (error) {
-        res.status(500).json({ status: 'error', message: error.message, stack: error.stack });
-    }
-});
-
 // Default Error Handler
 app.use((err, req, res, next) => {
     console.error('GLOBAL ERROR:', err.message);
     res.status(500).json({
         message: 'Internal Server Error',
         error: err.message,
-        stack: err.stack // Temporarily show stack even in production
+        stack: process.env.NODE_ENV === 'production' ? null : err.stack
     });
 });
 
