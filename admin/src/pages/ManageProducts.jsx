@@ -124,6 +124,11 @@ const ManageProducts = () => {
             return;
         }
 
+        if (!imageFile && !formData.image) {
+            alert("Product image is required. Please upload a file or paste an image URL.");
+            return;
+        }
+
         try {
             const data = new FormData();
             data.append('name', formData.name);
@@ -152,7 +157,8 @@ const ManageProducts = () => {
             fetchProducts();
         } catch (error) {
             console.error("Save operation failed", error);
-            alert("Error saving product. Please check your credentials and connection.");
+            const errorMessage = error.response?.data?.message || "Error saving product. Please check your inputs and connection.";
+            alert(errorMessage);
         }
     };
 
