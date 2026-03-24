@@ -17,18 +17,21 @@ const authUser = async (req, res) => {
 
         if (user) {
             const isMatch = await user.matchPassword(password);
-            console.log(`USER FOUND: ${email}, MATCH: ${isMatch}, ADMIN: ${user.isAdmin}`);
+            const adminEmail = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
+            const lowerEmail = user.email.toLowerCase();
+            
+            console.log(`USER FOUND: ${lowerEmail}, MATCH: ${isMatch}, DB_ISADMIN: ${user.isAdmin}, TARGET_ADMIN_EMAIL: ${adminEmail}`);
 
             if (isMatch) {
                 // Master Admin Auto-Promotion
-                const adminEmail = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
-                if (user.email && user.email.toLowerCase() === adminEmail && !user.isAdmin) {
-                    console.log(`AUTO-PROMOTING MASTER ADMIN: ${user.email}`);
+                if (lowerEmail === adminEmail && !user.isAdmin) {
+                    console.log(`AUTO-PROMOTING MASTER ADMIN: ${user.email} (Email match)`);
                     user.isAdmin = true;
                     await user.save();
                 }
 
                 if (!user.isAdmin) {
+                    console.warn(`LOGIN BLOCKED: ${lowerEmail} is not an admin.`);
                     return res.status(403).json({ message: 'Access denied: You are not an admin' });
                 }
                 return res.json({
