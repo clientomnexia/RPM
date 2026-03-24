@@ -102,8 +102,9 @@ const ManageProducts = () => {
             fetchData();
         } catch (error) {
             console.error("Save failed", error);
-            const msg = error.response?.data?.message || "Operation failed. Please check your session.";
-            alert(`Error: ${msg}`);
+            const responseData = error.response?.data;
+            const msg = responseData?.message || responseData?.error || "Operation failed. Please check your session.";
+            alert(`Error: ${msg}\n${responseData?.stack ? 'Check console for stack trace.' : ''}`);
         }
     };
 

@@ -40,9 +40,12 @@ const getProductById = async (req, res) => {
  */
 const createProduct = async (req, res) => {
     try {
+        console.log('CREATE PRODUCT - USER:', req.user ? req.user.email : 'NO USER');
+        console.log('CREATE PRODUCT - BODY:', req.body);
+        console.log('CREATE PRODUCT - FILE:', req.file ? req.file.path : 'NO FILE');
+
         const { name, description, price, category, stock } = req.body;
         
-        // Image can come from file upload (Cloudinary) or direct URL
         let image = req.body.image;
         if (req.file) {
             image = req.file.path;
