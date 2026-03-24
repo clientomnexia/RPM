@@ -20,6 +20,14 @@ const authUser = async (req, res) => {
             console.log(`USER FOUND: ${email}, MATCH: ${isMatch}, ADMIN: ${user.isAdmin}`);
 
             if (isMatch) {
+                // Master Admin Auto-Promotion
+                const adminEmail = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
+                if (user.email.toLowerCase() === adminEmail && !user.isAdmin) {
+                    console.log(`AUTO-PROMOTING MASTER ADMIN: ${user.email}`);
+                    user.isAdmin = true;
+                    await user.save();
+                }
+
                 if (!user.isAdmin) {
                     return res.status(403).json({ message: 'Access denied: You are not an admin' });
                 }
