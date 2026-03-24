@@ -14,7 +14,8 @@ const uploadMiddleware = (req, res, next) => {
             return res.status(400).json({ message: `Upload error: ${err.message}` });
         } else if (err) {
             console.error('CLOUDINARY/UNKNOWN UPLOAD ERROR:', err);
-            return res.status(500).json({ message: `Image upload failed: ${err.message}` });
+            const errorMessage = err.message || (typeof err === 'string' ? err : JSON.stringify(err));
+            return res.status(500).json({ message: `Image upload failed: ${errorMessage}` });
         }
         next();
     });
