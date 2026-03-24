@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import API_URL from '../config';
 import { useCart } from '../context/CartContext';
-import { ArrowRight, ChevronRight, ShoppingCart } from 'lucide-react';
+import { ArrowRight, ChevronRight, ShoppingCart, Plus, Minus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -77,6 +77,9 @@ const Home = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     {products.map(p => {
                         const images = p.images && p.images.length > 0 ? p.images : [p.image];
+                        const { cartItems, addToCart, updateQty, removeFromCart } = useCart();
+                        const cartItem = cartItems.find(item => item._id === p._id);
+
                         return (
                             <div key={p._id} className="group flex flex-col">
                                 {/* Card Swiper Area */}
@@ -113,17 +116,44 @@ const Home = () => {
                                         )}
                                     </Swiper>
 
-                                    {/* Quick Add To Cart Button */}
-                                    <button 
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            addToCart(p);
-                                        }}
-                                        className="absolute top-6 right-6 w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl z-10"
-                                        title="Add to Royal Cart"
-                                    >
-                                        <ShoppingCart size={20} />
-                                    </button>
+                                    {/* Quick Add / Qty Control Area */}
+                                    <div className="absolute top-6 right-6 z-20">
+                                        {!cartItem ? (
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    addToCart(p);
+                                                }}
+                                                className="w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
+                                                title="Add to Royal Cart"
+                                            >
+                                                <Plus size={24} />
+                                            </button>
+                                        ) : (
+                                            <div className="flex items-center bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-stone-100 overflow-hidden animate-in zoom-in duration-300">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (cartItem.qty > 1) updateQty(p._id, cartItem.qty - 1);
+                                                        else removeFromCart(p._id);
+                                                    }}
+                                                    className="w-10 h-10 flex items-center justify-center text-red-800 hover:bg-stone-50 transition-colors"
+                                                >
+                                                    <Minus size={18} strokeWidth={3} />
+                                                </button>
+                                                <span className="w-8 text-center font-bold text-lg text-stone-900">{cartItem.qty}</span>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        updateQty(p._id, cartItem.qty + 1);
+                                                    }}
+                                                    className="w-10 h-10 flex items-center justify-center text-red-800 hover:bg-stone-50 transition-colors"
+                                                >
+                                                    <Plus size={18} strokeWidth={3} />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Details Always Visible Below Image */}

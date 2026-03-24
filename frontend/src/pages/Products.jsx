@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import API_URL from '../config';
 import { useCart } from '../context/CartContext';
-import { Plus, Loader2, ChevronRight, ShoppingCart } from 'lucide-react';
+import { Plus, Loader2, ChevronRight, ShoppingCart, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -77,6 +77,9 @@ const Products = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {filteredProducts.map(product => {
                         const images = product.images && product.images.length > 0 ? product.images : [product.image];
+                        const { cartItems, addToCart, updateQty, removeFromCart } = useCart();
+                        const cartItem = cartItems.find(item => item._id === product._id);
+
                         return (
                             <div key={product._id} className="bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 flex flex-col hover:shadow-2xl transition-all duration-500 group">
                                 <div className="h-64 overflow-hidden relative">
@@ -125,13 +128,35 @@ const Products = () => {
                                     </div>
                                     <div className="mt-auto pt-6 flex items-center justify-between">
                                         <span className="text-2xl font-serif font-black text-red-900">₹{product.price}</span>
-                                        <button 
-                                            onClick={() => addToCart(product)} 
-                                            className="w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-red-900/20"
-                                            title="Add to Royal Cart"
-                                        >
-                                            <ShoppingCart size={22} />
-                                        </button>
+                                        
+                                        {!cartItem ? (
+                                            <button 
+                                                onClick={() => addToCart(product)} 
+                                                className="w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-lg shadow-red-900/20"
+                                                title="Add to Royal Cart"
+                                            >
+                                                <Plus size={24} />
+                                            </button>
+                                        ) : (
+                                            <div className="flex items-center bg-stone-50 rounded-2xl border border-stone-100 overflow-hidden shadow-sm animate-in zoom-in duration-300">
+                                                <button 
+                                                    onClick={() => {
+                                                        if (cartItem.qty > 1) updateQty(product._id, cartItem.qty - 1);
+                                                        else removeFromCart(product._id);
+                                                    }}
+                                                    className="w-10 h-10 flex items-center justify-center text-red-800 hover:bg-stone-200 transition-colors"
+                                                >
+                                                    <Minus size={16} strokeWidth={3} />
+                                                </button>
+                                                <span className="w-8 text-center font-bold text-stone-900">{cartItem.qty}</span>
+                                                <button 
+                                                    onClick={() => updateQty(product._id, cartItem.qty + 1)}
+                                                    className="w-10 h-10 flex items-center justify-center text-red-800 hover:bg-stone-200 transition-colors"
+                                                >
+                                                    <Plus size={16} strokeWidth={3} />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

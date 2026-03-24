@@ -5,7 +5,7 @@ import API_URL from '../config';
 import { useCart } from '../context/CartContext';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import { ChevronLeft, ShoppingCart, ArrowLeft, Star, Share2 } from 'lucide-react';
+import { ChevronLeft, ShoppingCart, ArrowLeft, Star, Share2, Plus, Minus } from 'lucide-react';
 import Loader from '../components/Loader';
 
 // Import Swiper styles
@@ -127,16 +127,49 @@ const ProductDetail = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <button 
-                                onClick={() => {
-                                    addToCart(product);
-                                    navigate('/cart');
-                                }}
-                                className="flex-1 px-10 py-5 bg-red-800 hover:bg-red-700 text-white rounded-2xl font-bold flex items-center justify-center gap-4 shadow-2xl transition-all hover:-translate-y-1 active:translate-y-0"
-                            >
-                                <ShoppingCart size={20} />
-                                Add to Royal Cart
-                            </button>
+                            {(() => {
+                                const { cartItems, addToCart, updateQty, removeFromCart } = useCart();
+                                const cartItem = cartItems.find(item => item._id === product._id);
+                                
+                                if (!cartItem) {
+                                    return (
+                                        <button 
+                                            onClick={() => {
+                                                addToCart(product);
+                                            }}
+                                            className="flex-1 px-10 py-5 bg-red-800 hover:bg-red-700 text-white rounded-2xl font-bold flex items-center justify-center gap-4 shadow-2xl transition-all hover:-translate-y-1 active:translate-y-0"
+                                        >
+                                            <ShoppingCart size={20} />
+                                            Add to Royal Cart
+                                        </button>
+                                    );
+                                }
+                                
+                                return (
+                                    <div className="flex-1 flex items-center justify-between bg-white rounded-2xl border-2 border-red-800/10 p-1 shadow-lg overflow-hidden animate-in zoom-in duration-300">
+                                        <button 
+                                            onClick={() => {
+                                                if (cartItem.qty > 1) updateQty(product._id, cartItem.qty - 1);
+                                                else removeFromCart(product._id);
+                                            }}
+                                            className="w-16 h-14 flex items-center justify-center text-red-800 hover:bg-stone-50 transition-colors rounded-xl font-black"
+                                        >
+                                            <Minus size={24} strokeWidth={3} />
+                                        </button>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-2xl font-black text-stone-900 leading-none">{cartItem.qty}</span>
+                                            <span className="text-[10px] font-black uppercase text-stone-400 tracking-tighter">In Cart</span>
+                                        </div>
+                                        <button 
+                                            onClick={() => updateQty(product._id, cartItem.qty + 1)}
+                                            className="w-16 h-14 flex items-center justify-center text-red-800 hover:bg-stone-50 transition-colors rounded-xl font-black"
+                                        >
+                                            <Plus size={24} strokeWidth={3} />
+                                        </button>
+                                    </div>
+                                );
+                            })()}
+                            
                             <button 
                                 className="px-8 py-5 border border-stone-200 hover:bg-stone-100 text-stone-600 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all"
                                 onClick={() => {
