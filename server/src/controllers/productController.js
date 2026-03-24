@@ -24,27 +24,36 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
+        console.log('CREATE PRODUCT REQUEST:', req.body);
         const { name, description, price, category, stock } = req.body;
         let image = req.body.image;
 
         if (req.file) {
+            console.log('CREATE PRODUCT FILE:', req.file.path);
             image = req.file.path; // Cloudinary URL
+        }
+
+        if (!image) {
+            return res.status(400).json({ message: 'Product image is required (URL or File)' });
         }
 
         const product = new Product({ name, description, price, image, category, stock });
         const createdProduct = await product.save();
         res.status(201).json(createdProduct);
     } catch (error) {
+        console.error('CREATE PRODUCT ERROR:', error.message);
         res.status(400).json({ message: error.message });
     }
 };
 
 const updateProduct = async (req, res) => {
     try {
+        console.log('UPDATE PRODUCT REQUEST:', req.params.id, req.body);
         const { name, description, price, category, stock } = req.body;
         let image = req.body.image;
 
         if (req.file) {
+            console.log('UPDATE PRODUCT FILE:', req.file.path);
             image = req.file.path; // Cloudinary URL
         }
 
@@ -62,6 +71,7 @@ const updateProduct = async (req, res) => {
             res.status(404).json({ message: 'Product not found' });
         }
     } catch (error) {
+        console.error('UPDATE PRODUCT ERROR:', error.message);
         res.status(400).json({ message: error.message });
     }
 };

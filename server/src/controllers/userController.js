@@ -22,7 +22,7 @@ const authUser = async (req, res) => {
             if (isMatch) {
                 // Master Admin Auto-Promotion
                 const adminEmail = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
-                if (user.email.toLowerCase() === adminEmail && !user.isAdmin) {
+                if (user.email && user.email.toLowerCase() === adminEmail && !user.isAdmin) {
                     console.log(`AUTO-PROMOTING MASTER ADMIN: ${user.email}`);
                     user.isAdmin = true;
                     await user.save();

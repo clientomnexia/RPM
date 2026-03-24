@@ -20,13 +20,28 @@ const protect = async (req, res, next) => {
 };
 
 const admin = (req, res, next) => {
-    const adminEmail = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
-    
-    if (req.user && (req.user.isAdmin || req.user.email.toLowerCase() === adminEmail)) {
-        next();
-    } else {
+    try {
+        const adminEmail = (process.env.ADMIN_EMAIL || 'admin@rpm.com').toLowerCase();
+        
+        if (req.user) {
+            const userEmail = (req.user.email || '').toLowerCase();
+            const isAdmin = req.user.isAdmin || userEmail === adminEmail;
+            
+            console.log(`ADMIN CHECK: User=${userEmail}, IsAdminField=${req.user.isAdmin}, Result=${isAdmin}`);
+            
+            if (isAdmin) {
+                return next();
+            }
+        }
+        
         console.warn(`Admin access denied for user: ${req.user ? req.user.email : 'Unknown'}`);
-        res.status(401).json({ message: 'Not authorized as an admin' });
+        return res.status(401).json({ message: 'Not authorized as an admin' });
+    } catch (error) {
+        console.error('ADMIN MIDDLEWARE ERROR:', error.message);
+        return res.status(500).json({ 
+            message: 'Internal server error in admin middleware', 
+            error: error.message 
+        });
     }
 };
 
