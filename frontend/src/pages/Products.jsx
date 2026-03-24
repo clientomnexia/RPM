@@ -3,12 +3,14 @@ import axios from 'axios';
 import API_URL from '../config';
 import { useCart } from '../context/CartContext';
 import { Plus, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
     const [filter, setFilter] = useState('All');
     const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
+    const navigate = useNavigate();
 
     const [categories, setCategories] = useState(['All']);
 
@@ -68,7 +70,7 @@ const Products = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {filteredProducts.map(product => (
                         <div key={product._id} className="bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 flex flex-col hover:shadow-2xl transition-all duration-500 group">
-                            <div className="h-64 overflow-hidden relative">
+                            <div className="h-64 overflow-hidden relative cursor-pointer" onClick={() => navigate(`/product/${product._id}`)}>
                                 <img 
                                     src={product.image && product.image.startsWith('/uploads') ? `${API_URL}${product.image}` : product.image || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400'} 
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 

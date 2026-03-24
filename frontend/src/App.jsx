@@ -9,6 +9,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import Catering from './pages/Catering';
+import ProductDetail from './pages/ProductDetail';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/catering" element={<Catering />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
               </Routes>
             </main>
             <Footer />

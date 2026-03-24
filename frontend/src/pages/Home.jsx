@@ -69,18 +69,32 @@ const Home = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {products.map(p => (
-                        <div key={p._id} className="group cursor-pointer" onClick={() => navigate('/products')}>
-                            <div className="h-96 rounded-3xl overflow-hidden mb-6 relative">
+                        <div key={p._id} className="group relative">
+                            <div 
+                                className="h-96 rounded-[2.5rem] overflow-hidden mb-6 relative cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500" 
+                                onClick={() => navigate(`/product/${p._id}`)}
+                            >
                                 <img 
                                     src={p.image && p.image.startsWith('/uploads') ? `${API_URL}${p.image}` : p.image || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400'} 
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                                     alt={p.name} 
                                 />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="absolute bottom-6 left-6 right-6 p-6 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
                                     <h4 className="font-bold text-lg text-stone-900">{p.name}</h4>
                                     <p className="text-red-800 font-serif font-bold">₹{p.price}</p>
                                 </div>
                             </div>
+                            {/* Fast Add Button */}
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    addToCart(p);
+                                }}
+                                className="absolute top-6 right-6 w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-10"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
                         </div>
                     ))}
                 </div>
