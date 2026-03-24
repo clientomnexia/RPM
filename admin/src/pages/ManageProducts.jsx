@@ -104,7 +104,8 @@ const ManageProducts = () => {
             console.error("Save failed", error);
             const responseData = error.response?.data;
             const msg = responseData?.message || responseData?.error || "Operation failed. Please check your session.";
-            alert(`Error: ${msg}\n${responseData?.stack ? 'Check console for stack trace.' : ''}`);
+            const stack = responseData?.stack ? `\n\nStack: ${responseData.stack.split('\n')[0]}...` : '';
+            alert(`Error: ${msg}${stack}`);
         }
     };
 

@@ -87,7 +87,8 @@ app.get('/api/category-check', async (req, res) => {
 
 // Default Error Handler
 app.use((err, req, res, next) => {
-    console.error('GLOBAL ERROR:', err.message);
+    console.error(`GLOBAL ERROR [${req.method} ${req.path}]:`, err.message);
+    if (err.stack) console.error(err.stack);
     res.status(500).json({
         message: 'Internal Server Error',
         error: err.message,
