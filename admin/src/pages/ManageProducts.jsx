@@ -13,8 +13,10 @@ const ManageProducts = () => {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editId, setEditId] = useState(null);
-    const [imageFile, setImageFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [imageFiles, setImageFiles] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
+    const [imageUrls, setImageUrls] = useState(['']); // Array of URL strings
+    const [successMessage, setSuccessMessage] = useState('');
     const [showCategorySection, setShowCategorySection] = useState(false);
     
     const [formData, setFormData] = useState({
@@ -22,8 +24,7 @@ const ManageProducts = () => {
         price: '',
         category: '',
         description: '',
-        stock: '',
-        image: ''
+        stock: ''
     });
 
     const [categoryData, setCategoryData] = useState({
@@ -77,25 +78,38 @@ const ManageProducts = () => {
         e.preventDefault();
 
         if (!formData.category) return alert("Please select a category.");
-        if (!imageFile && !formData.image) return alert("Image is required.");
+        
+        const hasUrls = imageUrls.some(url => url.trim() !== '');
+        if (imageFiles.length === 0 && !hasUrls) return alert("At least one image (file or URL) is required.");
 
         try {
             const data = new FormData();
             Object.keys(formData).forEach(key => {
-                if (key !== 'image') data.append(key, formData[key]);
+                data.append(key, formData[key]);
             });
 
-            if (imageFile) {
-                data.append('image', imageFile);
-            } else {
-                data.append('image', formData.image);
-            }
+            // Append multiple files
+            imageFiles.forEach(file => {
+                data.append('images', file);
+            });
+
+            // Append multiple URLs
+            imageUrls.forEach(url => {
+                if (url.trim()) {
+                    data.append('imageUrls', url.trim());
+                }
+            });
 
             if (editId) {
                 await axios.put(`${API_URL}/api/products/${editId}`, data, getAuthConfig(true));
+                setSuccessMessage("Product updated successfully!");
             } else {
                 await axios.post(`${API_URL}/api/products`, data, getAuthConfig(true));
+                setSuccessMessage("Product added successfully!");
             }
+
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(''), 3000);
 
             setShowModal(false);
             resetProductForm();
@@ -155,33 +169,81 @@ const ManageProducts = () => {
 
     // --- Form Helpers ---
     const resetProductForm = () => {
-        setFormData({ name: '', price: '', category: '', description: '', stock: '', image: '' });
-        setImageFile(null);
-        setImagePreview(null);
+        setFormData({ name: '', price: '', category: '', description: '', stock: '' });
+        setImageFiles([]);
+        setImagePreviews([]);
+        setImageUrls(['']);
         setEditId(null);
     };
 
     const handleEditClick = (p) => {
-        setFormData({ ...p });
-        setImagePreview(p.image);
+        setFormData({ 
+            name: p.name,
+            price: p.price,
+            category: p.category,
+            description: p.description,
+            stock: p.stock
+        });
+        setImagePreviews(p.images || [p.image]);
+        setImageUrls(p.images || [p.image]);
         setEditId(p._id);
         setShowModal(true);
     };
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => setImagePreview(reader.result);
-            reader.readAsDataURL(file);
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setImageFiles(prev => [...prev, ...files]);
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setImagePreviews(prev => [...prev, reader.result]);
+                };
+                reader.readAsDataURL(file);
+            });
         }
+    };
+
+    const handleAddUrlField = () => {
+        setImageUrls([...imageUrls, '']);
+    };
+
+    const handleUrlChange = (index, value) => {
+        const newUrls = [...imageUrls];
+        newUrls[index] = value;
+        setImageUrls(newUrls);
+        
+        // Update previews (only for valid looking URLs or ones that changed)
+        // This is a bit complex for a simple preview, but let's just use the imageUrls for previews too if they contain something.
+    };
+
+    const removeUrlField = (index) => {
+        const newUrls = imageUrls.filter((_, i) => i !== index);
+        setImageUrls(newUrls.length > 0 ? newUrls : ['']);
     };
 
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading products...</div>;
 
     return (
         <div className="manage-products-container">
+            {/* Success Message Notification */}
+            {successMessage && (
+                <div style={{
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    background: '#4caf50',
+                    color: 'white',
+                    padding: '1rem 2rem',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                    zIndex: 1000,
+                    animation: 'slideIn 0.3s ease-out'
+                }}>
+                    ✅ {successMessage}
+                </div>
+            )}
             {/* Category Section (Accordion) */}
             <div className="category-manager" style={{ marginBottom: '2rem', border: '1px solid #333', borderRadius: '8px' }}>
                 <button 
@@ -274,10 +336,37 @@ const ManageProducts = () => {
                         <div className="form-group"><label>Price (₹)</label><input type="number" required value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} /></div>
                         <div className="form-group"><label>Stock</label><input type="number" required value={formData.stock} onChange={e => setFormData({ ...formData, stock: e.target.value })} /></div>
                         <div className="form-group">
-                            <label>Image (File or URL)</label>
-                            <input type="file" onChange={handleFileChange} />
-                            <input type="text" placeholder="Or paste image URL" value={formData.image} onChange={e => { setFormData({ ...formData, image: e.target.value }); setImagePreview(e.target.value); }} />
-                            {imagePreview && <img src={imagePreview} style={{ width: '80px', marginTop: '0.5rem' }} alt="Preview" />}
+                            <label>Images (Multiple Files)</label>
+                            <input type="file" multiple onChange={handleFileChange} style={{ marginBottom: '0.5rem' }} />
+                            
+                            <label>Image URLs</label>
+                            {imageUrls.map((url, index) => (
+                                <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Paste image URL" 
+                                        value={url} 
+                                        onChange={e => handleUrlChange(index, e.target.value)} 
+                                        style={{ flex: 1 }}
+                                    />
+                                    {imageUrls.length > 1 && (
+                                        <button type="button" onClick={() => removeUrlField(index)} style={{ background: '#ff4d4d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '0 10px' }}>×</button>
+                                    )}
+                                </div>
+                            ))}
+                            <button type="button" onClick={handleAddUrlField} style={{ fontSize: '0.8rem', background: '#0f3460', color: '#fff', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', marginBottom: '1rem' }}>+ Add more URL</button>
+
+                            {imagePreviews.length > 0 && (
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                                    {imagePreviews.map((src, i) => (
+                                        <img key={i} src={src} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} alt="Preview" />
+                                    ))}
+                                    {/* Also show previews for URLs that aren't in imagePreviews yet */}
+                                    {imageUrls.filter(url => url && !imagePreviews.includes(url)).map((url, i) => (
+                                        <img key={`url-${i}`} src={url} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #444' }} alt="URL Preview" />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div className="form-group"><label>Description</label><textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} /></div>
                         

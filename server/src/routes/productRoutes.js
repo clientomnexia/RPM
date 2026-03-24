@@ -8,7 +8,7 @@ const { storage } = require('../config/cloudinary');
 const upload = multer({ storage });
 
 const uploadMiddleware = (req, res, next) => {
-    upload.single('image')(req, res, (err) => {
+    upload.array('images', 10)(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             console.error('MULTER ERROR:', err);
             return res.status(400).json({ message: `Upload error: ${err.message}` });

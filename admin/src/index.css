@@ -275,3 +275,14 @@ th {
     color: #e74c3c;
     border-color: #e74c3c;
 }
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
