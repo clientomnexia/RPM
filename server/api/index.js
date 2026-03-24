@@ -85,6 +85,23 @@ app.get('/api/category-check', async (req, res) => {
     }
 });
 
+// Cloudinary Config Check
+app.get('/api/cloudinary-check', (req, res) => {
+    const config = {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'MISSING',
+        api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+        api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+    };
+    
+    const isReady = Object.values(config).every(v => v === 'SET');
+    
+    res.json({
+        status: isReady ? 'configured' : 'incomplete',
+        config,
+        tip: isReady ? 'Configuration looks good!' : 'Please add your Cloudinary credentials to Vercel Environment Variables.'
+    });
+});
+
 // Default Error Handler
 app.use((err, req, res, next) => {
     console.error(`GLOBAL ERROR [${req.method} ${req.path}]:`, err.message);

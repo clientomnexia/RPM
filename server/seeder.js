@@ -40,14 +40,14 @@ const importData = async () => {
         ];
 
         const products = [
-            { name: "Royal Meetha Pan", price: 50, description: "A sweet blend of gulkand, dates, and aromatic spices.", category: "Pan", stock: 100, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400" },
-            { name: "Saffron Special", price: 80, description: "Infused with pure saffron for a truly royal experience.", category: "Pan", stock: 50, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400" },
-            { name: "Classic Cigarette", price: 18, description: "Premium tobacco blend.", category: "Cigarettes", stock: 200, image: "https://images.unsplash.com/photo-1559811814-e2c57b5e69df?w=400" },
-            { name: "Cool Mint Mouth Freshener", price: 25, description: "Extra fresh minty sensation.", category: "Tobacco", stock: 150, image: "https://via.placeholder.com/400" },
-            { name: "Mango Delight Juice", price: 40, description: "Pure mango pulp refreshment.", category: "Cold drinks", stock: 80, image: "https://images.unsplash.com/photo-1546173159-315724a31696?w=400" },
-            { name: "Spicy Masala Chips", price: 20, description: "Crunchy potato chips with Indian spices.", category: "Snacks", stock: 120, image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400" },
-            { name: "Royal Combo", price: 150, description: "Royal Pan + Cold Drink + Snacks.", category: "Combo", stock: 30, image: "https://via.placeholder.com/400" },
-            { name: "Hookah Special Blend", price: 450, description: "Premium flavored tobacco for hookah.", category: "Tobacco", stock: 20, image: "https://via.placeholder.com/400" }
+            { name: "Royal Meetha Pan", price: 50, description: "A sweet blend of gulkand, dates, and aromatic spices.", category: "Pan", stock: 100, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500" },
+            { name: "Saffron Special", price: 80, description: "Infused with pure saffron for a truly royal experience.", category: "Pan", stock: 50, image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500" },
+            { name: "Classic Cigarette", price: 18, description: "Premium tobacco blend.", category: "Cigarettes", stock: 200, image: "https://images.unsplash.com/photo-1559811814-e2c57b5e69df?w=500" },
+            { name: "Cool Mint Mouth Freshener", price: 25, description: "Extra fresh minty sensation.", category: "Tobacco", stock: 150, image: "https://images.unsplash.com/photo-1701743818302-31d79679ccfc?w=500" },
+            { name: "Mango Delight Juice", price: 40, description: "Pure mango pulp refreshment.", category: "Cold drinks", stock: 80, image: "https://images.unsplash.com/photo-1546173159-315724a31696?w=500" },
+            { name: "Spicy Masala Chips", price: 20, description: "Crunchy potato chips with Indian spices.", category: "Snacks", stock: 120, image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=500" },
+            { name: "Royal Combo", price: 150, description: "Royal Pan + Cold Drink + Snacks.", category: "Combo", stock: 30, image: "https://images.unsplash.com/photo-1511018556340-d16986a1c194?w=500" },
+            { name: "Hookah Special Blend", price: 450, description: "Premium flavored tobacco for hookah.", category: "Tobacco", stock: 20, image: "https://images.unsplash.com/photo-1511018556340-d16986a1c194?w=500" }
         ];
 
         const franchises = [
