@@ -2,8 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import API_URL from '../config';
 import { useCart } from '../context/CartContext';
-import { ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronRight, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -67,36 +74,77 @@ const Home = () => {
                     <h2 className="text-sm uppercase tracking-[0.4em] font-bold text-amber-600 mb-2">Our Stuffs</h2>
                     <h3 className="text-4xl font-serif font-bold text-stone-900">Handcrafted Masterpieces</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {products.map(p => (
-                        <div key={p._id} className="group relative">
-                            <div 
-                                className="h-96 rounded-[2.5rem] overflow-hidden mb-6 relative cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500" 
-                                onClick={() => navigate(`/product/${p._id}`)}
-                            >
-                                <img 
-                                    src={p.image && p.image.startsWith('/uploads') ? `${API_URL}${p.image}` : p.image || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400'} 
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                                    alt={p.name} 
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="absolute bottom-6 left-6 right-6 p-6 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                                    <h4 className="font-bold text-lg text-stone-900">{p.name}</h4>
-                                    <p className="text-red-800 font-serif font-bold">₹{p.price}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    {products.map(p => {
+                        const images = p.images && p.images.length > 0 ? p.images : [p.image];
+                        return (
+                            <div key={p._id} className="group flex flex-col">
+                                {/* Card Swiper Area */}
+                                <div className="h-96 rounded-[2.5rem] overflow-hidden mb-6 relative shadow-lg hover:shadow-2xl transition-all duration-500 bg-white">
+                                    <Swiper
+                                        modules={[Navigation, Pagination]}
+                                        navigation={{
+                                            nextEl: `.next-${p._id}`,
+                                            prevEl: `.prev-${p._id}`,
+                                        }}
+                                        pagination={{ clickable: true }}
+                                        className="h-full w-full"
+                                    >
+                                        {images.map((img, idx) => (
+                                            <SwiperSlide key={idx} onClick={() => navigate(`/product/${p._id}`)} className="cursor-pointer">
+                                                <img 
+                                                    src={img && img.startsWith('/uploads') ? `${API_URL}${img}` : img || 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400'} 
+                                                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
+                                                    alt={p.name} 
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+
+                                        {/* Custom Navigation for each card */}
+                                        {images.length > 1 && (
+                                            <>
+                                                <button className={`prev-${p._id} absolute left-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/80 backdrop-blur-md rounded-xl flex items-center justify-center text-stone-800 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity`}>
+                                                    <ChevronRight className="rotate-180" size={18} />
+                                                </button>
+                                                <button className={`next-${p._id} absolute right-3 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white/80 backdrop-blur-md rounded-xl flex items-center justify-center text-stone-800 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity`}>
+                                                    <ChevronRight size={18} />
+                                                </button>
+                                            </>
+                                        )}
+                                    </Swiper>
+
+                                    {/* Quick Add To Cart Button */}
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            addToCart(p);
+                                        }}
+                                        className="absolute top-6 right-6 w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl z-10"
+                                        title="Add to Royal Cart"
+                                    >
+                                        <ShoppingCart size={20} />
+                                    </button>
+                                </div>
+
+                                {/* Details Always Visible Below Image */}
+                                <div className="px-4 py-2 space-y-2">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="font-bold text-xl text-stone-900 group-hover:text-red-900 transition-colors cursor-pointer" onClick={() => navigate(`/product/${p._id}`)}>{p.name}</h4>
+                                            <p className="text-xs text-stone-400 font-bold uppercase tracking-widest">{p.category || 'Special Mix'}</p>
+                                        </div>
+                                        <p className="text-2xl font-serif font-black text-red-800">₹{p.price}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => navigate(`/product/${p._id}`)}
+                                        className="text-xs font-bold text-red-800 hover:underline uppercase tracking-widest flex items-center gap-1"
+                                    >
+                                        Read Detail <ChevronRight size={14} />
+                                    </button>
                                 </div>
                             </div>
-                            {/* Fast Add Button */}
-                            <button 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    addToCart(p);
-                                }}
-                                className="absolute top-6 right-6 w-12 h-12 bg-red-800 text-white rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 active:scale-95 transition-all shadow-xl z-10"
-                            >
-                                <ChevronRight size={24} />
-                            </button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
                 <div className="text-center mt-12">
                     <Link to="/products" className="inline-flex items-center gap-2 text-red-800 font-bold hover:underline">
