@@ -69,10 +69,7 @@ const Products = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="w-12 h-12 text-red-800 animate-spin" />
-                    <p className="text-stone-400 font-bold uppercase tracking-widest text-xs">Unlocking Royal Selections...</p>
-                </div>
+                <Loader />
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {filteredProducts.map(product => {

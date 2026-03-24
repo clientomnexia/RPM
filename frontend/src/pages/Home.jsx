@@ -6,6 +6,7 @@ import { ArrowRight, ChevronRight, ShoppingCart, Plus, Minus } from 'lucide-reac
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
+import Loader from '../components/Loader';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -14,16 +15,20 @@ import 'swiper/css/pagination';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             try {
                 const { data } = await axios.get(`${API_URL}/api/products`);
                 setProducts(data.slice(0, 3)); // Only feature top 3
             } catch (error) {
                 console.error("Error fetching products", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchProducts();
@@ -69,12 +74,17 @@ const Home = () => {
             </section>
 
             {/* Featured Items */}
-            <section className="py-24 max-w-7xl mx-auto px-4">
+            <section className="py-24 max-w-7xl mx-auto px-4 min-h-[600px]">
                 <div className="text-center mb-16">
                     <h2 className="text-sm uppercase tracking-[0.4em] font-bold text-amber-600 mb-2">Our Stuffs</h2>
                     <h3 className="text-4xl font-serif font-bold text-stone-900">Handcrafted Masterpieces</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                
+                {loading ? (
+                    <Loader />
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     {products.map(p => {
                         const images = p.images && p.images.length > 0 ? p.images : [p.image];
                         const { cartItems, addToCart, updateQty, removeFromCart } = useCart();
@@ -175,12 +185,14 @@ const Home = () => {
                             </div>
                         );
                     })}
-                </div>
-                <div className="text-center mt-12">
-                    <Link to="/products" className="inline-flex items-center gap-2 text-red-800 font-bold hover:underline">
-                        View Full Menu <ChevronRight size={18} />
-                    </Link>
-                </div>
+                        </div>
+                        <div className="text-center mt-12">
+                            <Link to="/products" className="inline-flex items-center gap-2 text-red-800 font-bold hover:underline">
+                                View Full Menu <ChevronRight size={18} />
+                            </Link>
+                        </div>
+                    </>
+                )}
             </section>
 
             {/* Special Mix Section */}
